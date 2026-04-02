@@ -1,16 +1,16 @@
-# Congratulations!
+# Поздравляем!
 
-You have completed the dbt tutorial. Here is what you learned:
+Вы завершили туториал по dbt. Вот что вы изучили:
 
-- **dbt init** — scaffold a new project
-- **dbt debug** — verify database connectivity
-- **dbt run** — build models (views/tables) from SQL files
-- **dbt test** — run data quality checks
-- **dbt build** — run models + tests together
+- **dbt init** — создание нового проекта
+- **dbt debug** — проверка подключения к базе данных
+- **dbt run** — сборка моделей (представлений/таблиц) из SQL-файлов
+- **dbt test** — запуск проверок качества данных
+- **dbt build** — запуск моделей и тестов вместе
 
-## Next steps
+## Следующие шаги
 
-- Add `materialized='table'` config to create tables instead of views
-- Explore sources with `sources.yml` to reference raw tables
-- Add custom tests in the `tests/` directory
-- Generate documentation with `dbt docs generate && dbt docs serve`
+- Добавьте конфиг `materialized='table'` для создания таблиц вместо представлений
+- Изучите sources с помощью `sources.yml` для ссылок на исходные таблицы
+- Добавьте собственные тесты в директорию `tests/`
+- Сгенерируйте документацию командой `dbt docs generate && dbt docs serve`

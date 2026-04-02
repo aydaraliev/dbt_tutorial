@@ -1,6 +1,6 @@
-# Run dbt test
+# Запуск dbt test
 
-Add a schema file with tests for the model:
+Добавьте файл схемы с тестами для модели:
 
 ```
 cat > /root/my_dbt_project/models/schema.yml << 'EOF'
@@ -8,7 +8,7 @@ version: 2
 
 models:
   - name: customer_orders
-    description: "Customer order summary"
+    description: "Сводка заказов по клиентам"
     columns:
       - name: customer_id
         tests:
@@ -23,21 +23,21 @@ models:
 EOF
 ```{{exec}}
 
-Run the tests:
+Запустите тесты:
 
 ```
 cd /root/my_dbt_project && dbt test
 ```{{exec}}
 
-All 4 tests should pass. dbt verified that:
-- `customer_id` is unique and not null
-- `name` is not null
-- `total_orders` is not null
+Все 4 теста должны пройти успешно. dbt проверил, что:
+- `customer_id` уникален и не содержит NULL
+- `name` не содержит NULL
+- `total_orders` не содержит NULL
 
-You can also run everything together:
+Также можно запустить всё вместе:
 
 ```
 dbt build
 ```{{exec}}
 
-`dbt build` runs models and tests in dependency order in a single command.
+`dbt build` запускает модели и тесты в порядке зависимостей одной командой.

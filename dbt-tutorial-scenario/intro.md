@@ -1,12 +1,12 @@
-# Getting Started with dbt
+# Введение в dbt
 
-In this tutorial you will:
+В этом туториале вы:
 
-1. Install **dbt-postgres** and set up a PostgreSQL database
-2. Initialize a new dbt project
-3. Create a simple SQL model and run it with `dbt run`
-4. Add a test and run it with `dbt test`
+1. Установите **dbt-postgres** и настроите базу данных PostgreSQL
+2. Инициализируете новый проект dbt
+3. Создадите простую SQL-модель и запустите её командой `dbt run`
+4. Добавите тест и запустите его командой `dbt test`
 
-By the end, you will have a working dbt project connected to a real database.
+К концу туториала у вас будет рабочий проект dbt, подключённый к реальной базе данных.
 
-Let's get started!
+Начнём!
