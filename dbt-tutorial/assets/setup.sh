@@ -1,7 +1,22 @@
 #!/bin/bash
 
-mkdir -p /root/workspace
-echo "This is the code editor window. The terminal window is the panel below." > /root/workspace/script.sh
+# Hide dotfiles and system dirs from the IDE file explorer
+mkdir -p /root/.theia
+cat > /root/.theia/settings.json << 'SETTINGS'
+{
+  "files.exclude": {
+    "**/.cache": true,
+    "**/.ssh": true,
+    "**/.theia": true,
+    "**/.bash_history": true,
+    "**/.bashrc": true,
+    "**/.profile": true,
+    "**/.vimrc": true,
+    "**/.wget-hsts": true,
+    "**/filesystem": true
+  }
+}
+SETTINGS
 
 apt-get update -qq && apt-get install -y -qq postgresql postgresql-contrib python3-pip python3-venv > /dev/null 2>&1
 
