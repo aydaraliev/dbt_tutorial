@@ -1,1 +1,1 @@
-Замените первый `____` на `count(*)`, второй на `1` (credit card payment type). Затем `dbt run` и `./datacheck`.
+Замените `_____` на `select * from read_parquet('yellow_tripdata_2023-01-partial.parquet')`, затем `dbt run` и `./datacheck`.
