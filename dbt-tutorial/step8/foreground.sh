@@ -3,22 +3,26 @@
 cat > /root/nyc_yellow_taxi/datacheck << 'SCRIPT'
 #!/bin/bash
 cd /root/nyc_yellow_taxi
-RESULT=$(/opt/dbt-env/bin/python3 -c "
-import duckdb
+/opt/dbt-env/bin/python3 -c "
+import duckdb, sys
 con = duckdb.connect('dbt.duckdb', read_only=True)
 try:
-    rows = con.execute('SELECT day, total_cc_riders FROM main.total_creditcard_riders_by_day ORDER BY day LIMIT 5').fetchall()
-    total = con.execute('SELECT SUM(total_cc_riders) FROM main.total_creditcard_riders_by_day').fetchone()[0]
-    print(f'Sample (first 5 days):')
+    rows = con.execute('SELECT day, total_cc_riders FROM main.total_creditcard_riders_by_day ORDER BY day').fetchall()
+    total = sum(r[1] for r in rows)
+    print('Day | CC Riders')
     for r in rows:
-        print(f'  Day {int(r[0]):2d}: {r[1]} riders')
+        print(f'  {int(r[0]):2d}  | {r[1]}')
     print(f'Total credit card riders: {total}')
+    if total == 384853:
+        print('Datacheck PASSED')
+    else:
+        print(f'Datacheck FAILED: expected 384853, got {total}')
+        sys.exit(1)
 except Exception as e:
     print(f'Error: {e}')
-    exit(1)
+    sys.exit(1)
 con.close()
-" 2>&1)
-echo "$RESULT"
+"
 SCRIPT
 chmod +x /root/nyc_yellow_taxi/datacheck
 
