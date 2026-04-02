@@ -1,7 +1,6 @@
 #!/bin/bash
 # Create creditcard_riders_by_day.sql with direct reference (needs ref)
 cat > /root/nyc_yellow_taxi/models/taxi_rides/creditcard_riders_by_day.sql << 'EOF'
-
 -- Обновите SQL, чтобы использовать Jinja-ссылку
 select
     date_part('day', tpep_pickup_datetime) as day,

@@ -63,7 +63,6 @@ DICT
 
 # Create the model with blanks for the user to fill in
 cat > /root/nyc_yellow_taxi/models/taxi_rides/total_creditcard_riders_by_day.sql << 'EOF'
-
 -- Заполните SQL-запрос для получения нужных данных
 select
     date_part('day', tpep_pickup_datetime) as day,
