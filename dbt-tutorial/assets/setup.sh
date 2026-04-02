@@ -18,9 +18,7 @@ cat > /root/.theia/settings.json << 'SETTINGS'
 }
 SETTINGS
 
-# Copy parquet data to a clean path
-mkdir -p /root/data
-cp /root/assets/yellow_tripdata_2023-01.parquet /root/data/ 2>/dev/null || true
+# Parquet data will be copied into the project dir after dbt init (in step6 foreground)
 
 
 apt-get update -qq && apt-get install -y -qq python3-pip python3-venv > /dev/null 2>&1

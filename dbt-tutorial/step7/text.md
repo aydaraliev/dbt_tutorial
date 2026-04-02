@@ -3,21 +3,20 @@
 Добавьте файл схемы с тестами для модели:
 
 ```
-cat > /root/nyc_yellow_taxi/models/schema.yml << 'EOF'
+cat > /root/nyc_yellow_taxi/models/taxi_rides/schema.yml << 'EOF'
 version: 2
 
 models:
-  - name: taxi_zone_summary
-    description: "Сводка поездок по зонам посадки"
+  - name: taxi_rides_raw
+    description: "Сырые данные поездок NYC Yellow Taxi"
     columns:
-      - name: pickup_zone_id
-        tests:
-          - unique
-          - not_null
-      - name: total_trips
+      - name: VendorID
         tests:
           - not_null
-      - name: avg_total_amount
+      - name: total_amount
+        tests:
+          - not_null
+      - name: trip_distance
         tests:
           - not_null
 EOF
@@ -29,10 +28,7 @@ EOF
 cd /root/nyc_yellow_taxi && dbt test
 ```{{exec}}
 
-Все 4 теста должны пройти успешно. dbt проверил, что:
-- `pickup_zone_id` уникален и не содержит NULL
-- `total_trips` не содержит NULL
-- `avg_total_amount` не содержит NULL
+Все 3 теста должны пройти успешно.
 
 Также можно запустить всё вместе:
 
