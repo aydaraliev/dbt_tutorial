@@ -1,1 +1,1 @@
-Добавьте `schema.yml` с тестами для колонок и выполните `dbt test`.
+Выполните `dbt compile`, затем откройте `target/compiled/nyc_yellow_taxi/models/taxi_rides/total_amounts.sql`.

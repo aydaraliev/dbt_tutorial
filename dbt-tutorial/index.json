@@ -72,10 +72,17 @@
         "foreground": "step9/foreground.sh"
       },
       {
-        "title": "Запуск dbt test",
+        "title": "Обработка Jinja-шаблона",
         "text": "step10/text.md",
         "verify": "step10/verify.sh",
-        "hint": "step10/hint.md"
+        "hint": "step10/hint.md",
+        "foreground": "step10/foreground.sh"
+      },
+      {
+        "title": "Запуск dbt test",
+        "text": "step11/text.md",
+        "verify": "step11/verify.sh",
+        "hint": "step11/hint.md"
       }
     ],
     "finish": {

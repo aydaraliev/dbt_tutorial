@@ -32,12 +32,12 @@ ln -sf /root/data/data_dictionary.txt /root/nyc_yellow_taxi/data_dictionary.txt
 # Create the model with blanks for the user to fill in
 cat > /root/nyc_yellow_taxi/models/taxi_rides/total_creditcard_riders_by_day.sql << 'EOF'
 
--- Update with SQL to return requested information
+-- Заполните SQL-запрос для получения нужных данных
 select
     date_part('day', tpep_pickup_datetime) as day,
     ____ as total_cc_riders
 from taxi_rides_raw
--- Refer to the Payment_type in schema doc
+-- Код типа оплаты см. в data_dictionary.txt
 where payment_type = ____
 group by day
 EOF

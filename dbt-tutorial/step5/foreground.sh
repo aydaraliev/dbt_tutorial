@@ -2,11 +2,11 @@
 # Create profiles.yml template with blanks for the user to fill in
 mkdir -p /root/.dbt
 cat > /root/.dbt/profiles.yml << 'EOF'
-# Modify the project name
+# Укажите имя проекта
 _____:
   outputs:
     dev:
-      # Change the database type
+      # Укажите тип базы данных
       type: _____
       path: dbt.duckdb
   target: dev

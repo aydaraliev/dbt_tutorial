@@ -2,7 +2,7 @@
 # Overwrite taxi_rides_raw.sql with CTE template containing a blank
 cat > /root/nyc_yellow_taxi/models/taxi_rides/taxi_rides_raw.sql << 'EOF'
 with source_data as (
-    -- Add the query as described to generate the data model
+    -- Добавьте запрос для генерации модели данных
     _____
 )
 

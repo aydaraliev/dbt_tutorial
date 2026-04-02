@@ -1,39 +1,13 @@
-# Запуск dbt test
+# Обработка Jinja-шаблона
 
-Добавьте файл схемы с тестами для модели:
+dbt использует Jinja — язык шаблонов, который позволяет генерировать SQL-код динамически. В файле `models/taxi_rides/total_amounts.sql` используется цикл `{% for %}` для перебора колонок. Вам не нужно понимать сам SQL — просто сравните шаблон с результатом компиляции.
 
-```
-cat > /root/nyc_yellow_taxi/models/taxi_rides/schema.yml << 'EOF'
-version: 2
+## Задание
 
-models:
-  - name: taxi_rides_raw
-    description: "Сырые данные поездок NYC Yellow Taxi"
-    columns:
-      - name: VendorID
-        tests:
-          - not_null
-      - name: total_amount
-        tests:
-          - not_null
-      - name: trip_distance
-        tests:
-          - not_null
-EOF
-```{{exec}}
+- Изучите файл `models/taxi_rides/total_amounts.sql` и обратите внимание на Jinja-синтаксис.
 
-Запустите тесты:
+- Выполните команду `dbt compile` для генерации скомпилированного SQL.
 
-```
-cd /root/nyc_yellow_taxi && dbt test
-```{{exec}}
+- Откройте файл `target/compiled/nyc_yellow_taxi/models/taxi_rides/total_amounts.sql` в редакторе.
 
-Все 3 теста должны пройти успешно.
-
-Также можно запустить всё вместе:
-
-```
-dbt build
-```{{exec}}
-
-`dbt build` запускает модели и тесты в порядке зависимостей одной командой.
+- Сравните исходный шаблон и скомпилированный результат. После сравнения нажмите Check.
