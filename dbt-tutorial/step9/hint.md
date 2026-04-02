@@ -1,1 +1,1 @@
-Добавьте `schema.yml` с тестами для колонок и выполните `dbt test`.
+Замените `_____` в `model_properties.yml` на описание, затем `dbt docs generate` и `dbt docs serve`.

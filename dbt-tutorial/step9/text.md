@@ -1,39 +1,17 @@
-# Запуск dbt test
+# Создание документации dbt
 
-Добавьте файл схемы с тестами для модели:
+dbt позволяет автоматически генерировать документацию для моделей на основе YAML-файлов. Команда `dbt docs` компилирует описания моделей и запускает веб-сервер для просмотра.
 
-```
-cat > /root/nyc_yellow_taxi/models/taxi_rides/schema.yml << 'EOF'
-version: 2
+В этом упражнении мы не будем просматривать документацию в браузере, а только убедимся, что она генерируется корректно.
 
-models:
-  - name: taxi_rides_raw
-    description: "Сырые данные поездок NYC Yellow Taxi"
-    columns:
-      - name: VendorID
-        tests:
-          - not_null
-      - name: total_amount
-        tests:
-          - not_null
-      - name: trip_distance
-        tests:
-          - not_null
-EOF
-```{{exec}}
+## Задание
 
-Запустите тесты:
+- Откройте файл `models/model_properties.yml` и добавьте описание, заменив `_____` на:
 
-```
-cd /root/nyc_yellow_taxi && dbt test
-```{{exec}}
+  `Initial import of the NYC Yellow Taxi trip data from Parquet source`
 
-Все 3 теста должны пройти успешно.
+- Выполните команду `dbt docs generate` для генерации документации.
 
-Также можно запустить всё вместе:
+- Выполните `dbt docs serve` для запуска сервера документации.
 
-```
-dbt build
-```{{exec}}
-
-`dbt build` запускает модели и тесты в порядке зависимостей одной командой.
+- Нажмите `Ctrl+C` для остановки сервера.

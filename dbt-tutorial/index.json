@@ -65,10 +65,17 @@
         "foreground": "step8/foreground.sh"
       },
       {
-        "title": "Запуск dbt test",
+        "title": "Создание документации dbt",
         "text": "step9/text.md",
         "verify": "step9/verify.sh",
-        "hint": "step9/hint.md"
+        "hint": "step9/hint.md",
+        "foreground": "step9/foreground.sh"
+      },
+      {
+        "title": "Запуск dbt test",
+        "text": "step10/text.md",
+        "verify": "step10/verify.sh",
+        "hint": "step10/hint.md"
       }
     ],
     "finish": {
