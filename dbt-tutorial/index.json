@@ -6,6 +6,11 @@
       "text": "intro.md",
       "background": "assets/setup.sh"
     },
+    "assets": {
+      "host01": [
+        {"file": "assets/yellow_tripdata_2023-01.parquet", "target": "/root/assets/"}
+      ]
+    },
     "steps": [
       {
         "title": "Запуск dbt",
@@ -46,10 +51,17 @@
         "foreground": "step6/foreground.sh"
       },
       {
-        "title": "Запуск dbt test",
+        "title": "Обновление модели dbt",
         "text": "step7/text.md",
         "verify": "step7/verify.sh",
-        "hint": "step7/hint.md"
+        "hint": "step7/hint.md",
+        "foreground": "step7/foreground.sh"
+      },
+      {
+        "title": "Запуск dbt test",
+        "text": "step8/text.md",
+        "verify": "step8/verify.sh",
+        "hint": "step8/hint.md"
       }
     ],
     "finish": {
