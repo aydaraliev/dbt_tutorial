@@ -9,3 +9,10 @@
 - С помощью команды Linux `cd` перейдите в созданную директорию проекта.
 
 - Убедитесь, что в проекте есть шесть основных поддиректорий (`analyses`, `macros`, `models`, `seeds`, `snapshots` и `tests`).
+
+<details>
+<summary>Подсказка</summary>
+
+Выполните `dbt init nyc_yellow_taxi`, выберите duckdb, затем `cd nyc_yellow_taxi` и `ls`.
+
+</details>

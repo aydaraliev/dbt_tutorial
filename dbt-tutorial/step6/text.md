@@ -9,3 +9,10 @@
 - В терминале перейдите в директорию `nyc_yellow_taxi` командой `cd`.
 
 - Выполните соответствующую подкоманду `dbt` из директории `nyc_yellow_taxi/` для материализации модели.
+
+<details>
+<summary>Подсказка</summary>
+
+Замените `____` на `yellow_tripdata_2023-01-partial.parquet`, затем `cd ~/nyc_yellow_taxi && dbt run`.
+
+</details>

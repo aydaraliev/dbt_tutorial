@@ -15,3 +15,10 @@
 - Выполните команду `dbt run` для материализации модели.
 
 - Выполните `./datacheck` в директории `nyc_yellow_taxi` для проверки результата.
+
+<details>
+<summary>Подсказка</summary>
+
+Замените первый `____` на `count(*)`, второй на `1` (credit card payment type). Затем `dbt run` и `./datacheck`.
+
+</details>

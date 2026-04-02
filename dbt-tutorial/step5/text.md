@@ -13,3 +13,10 @@
 - Перейдите в директорию проекта: `cd ~/nyc_yellow_taxi`.
 
 - Выполните команду `dbt debug`, чтобы убедиться, что ошибок нет.
+
+<details>
+<summary>Подсказка</summary>
+
+Откройте `~/.dbt/profiles.yml`, замените `_____` в первой строке на `nyc_yellow_taxi`, в строке `type:` на `duckdb`. Затем `cd ~/nyc_yellow_taxi && dbt debug`.
+
+</details>

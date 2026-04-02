@@ -15,3 +15,10 @@
 - Запустите проект снова и убедитесь, что ошибка исправлена.
 
 - Выполните `./datacheck`, чтобы убедиться, что в представлении 500000 записей.
+
+<details>
+<summary>Подсказка</summary>
+
+Замените `_____` на `select * from read_parquet('yellow_tripdata_2023-01-partial.parquet')`, затем `dbt run` и `./datacheck`.
+
+</details>

@@ -17,3 +17,10 @@
 - Замените прямую ссылку `taxi_rides_raw` на `{{ ref('taxi_rides_raw') }}`.
 
 - Запустите `dbt run` для обновления всех моделей.
+
+<details>
+<summary>Подсказка</summary>
+
+Замените `from taxi_rides_raw` на `from {{ ref('taxi_rides_raw') }}`, затем `dbt run`.
+
+</details>
