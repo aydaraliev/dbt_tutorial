@@ -20,22 +20,28 @@
         "hint": "step2/hint.md"
       },
       {
-        "title": "Инициализация проекта dbt",
+        "title": "Получение справки",
         "text": "step3/text.md",
         "verify": "step3/verify.sh",
         "hint": "step3/hint.md"
       },
       {
-        "title": "Создание и запуск первой модели",
+        "title": "Инициализация проекта dbt",
         "text": "step4/text.md",
         "verify": "step4/verify.sh",
         "hint": "step4/hint.md"
       },
       {
-        "title": "Запуск dbt test",
+        "title": "Создание и запуск первой модели",
         "text": "step5/text.md",
         "verify": "step5/verify.sh",
         "hint": "step5/hint.md"
+      },
+      {
+        "title": "Запуск dbt test",
+        "text": "step6/text.md",
+        "verify": "step6/verify.sh",
+        "hint": "step6/hint.md"
       }
     ],
     "finish": {

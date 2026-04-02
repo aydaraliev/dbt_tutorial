@@ -1,32 +1,32 @@
-# Создание и запуск первой модели
+# Инициализация проекта dbt
 
-Сначала удалите примеры моделей, которые dbt сгенерировал автоматически:
+Создайте новый проект dbt:
 
 ```
-rm -rf /root/my_dbt_project/models/example
+cd /root && dbt init my_dbt_project
 ```{{exec}}
 
-Создайте модель, которая считает количество поездок и среднюю стоимость по зонам посадки из набора данных NYC Yellow Taxi:
+Когда появится запрос:
+- Выберите **duckdb** в качестве базы данных (введите `1`)
+
+Теперь настроим профиль подключения:
 
 ```
-cat > /root/my_dbt_project/models/taxi_zone_summary.sql << 'EOF'
-SELECT
-    PULocationID AS pickup_zone_id,
-    COUNT(*) AS total_trips,
-    ROUND(AVG(total_amount), 2) AS avg_total_amount,
-    ROUND(AVG(trip_distance), 2) AS avg_distance
-FROM read_parquet('/root/data/yellow_tripdata_2023-01.parquet')
-GROUP BY PULocationID
-ORDER BY total_trips DESC
+mkdir -p /root/.dbt && cat > /root/.dbt/profiles.yml << 'EOF'
+my_dbt_project:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /root/my_dbt_project/dev.duckdb
+      threads: 1
 EOF
 ```{{exec}}
 
-Теперь запустите dbt:
+Перейдите в директорию проекта и проверьте подключение:
 
 ```
-cd /root/my_dbt_project && dbt run
+cd /root/my_dbt_project && dbt debug
 ```{{exec}}
 
-В выводе должно быть сообщение об успешном создании модели `taxi_zone_summary`.
-
-dbt создал **представление (view)** в DuckDB из вашей SQL-модели.
+Внизу вывода должно быть **All checks passed!** — это подтверждает, что dbt может подключиться к DuckDB.
