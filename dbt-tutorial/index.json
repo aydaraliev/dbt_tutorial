@@ -58,7 +58,7 @@
         "foreground": "step7/foreground.sh"
       },
       {
-        "title": "Обновление модели dbt",
+        "title": "Создание новой модели",
         "text": "step8/text.md",
         "verify": "step8/verify.sh",
         "hint": "step8/hint.md",
