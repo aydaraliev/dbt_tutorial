@@ -1,32 +1,11 @@
 # Инициализация проекта dbt
 
-Создайте новый проект dbt:
+Вы будете работать с набором данных NYC Yellow Taxi Cab. Необходимо создать и настроить проект, используя информацию из файла `ProjectInfo.txt`.
 
-```
-cd /root && dbt init my_dbt_project
-```{{exec}}
+## Задание
 
-Когда появится запрос:
-- Выберите **duckdb** в качестве базы данных (введите `1`)
+- Выполните соответствующую подкоманду `dbt` в терминале для инициализации проекта, используя информацию из файла `ProjectInfo.txt`.
 
-Теперь настроим профиль подключения:
+- С помощью команды Linux `cd` перейдите в созданную директорию проекта.
 
-```
-mkdir -p /root/.dbt && cat > /root/.dbt/profiles.yml << 'EOF'
-my_dbt_project:
-  target: dev
-  outputs:
-    dev:
-      type: duckdb
-      path: /root/my_dbt_project/dev.duckdb
-      threads: 1
-EOF
-```{{exec}}
-
-Перейдите в директорию проекта и проверьте подключение:
-
-```
-cd /root/my_dbt_project && dbt debug
-```{{exec}}
-
-Внизу вывода должно быть **All checks passed!** — это подтверждает, что dbt может подключиться к DuckDB.
+- Убедитесь, что в проекте есть шесть основных поддиректорий (`analyses`, `macros`, `models`, `seeds`, `snapshots` и `tests`).

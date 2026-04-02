@@ -3,7 +3,7 @@
 Добавьте файл схемы с тестами для модели:
 
 ```
-cat > /root/my_dbt_project/models/schema.yml << 'EOF'
+cat > /root/nyc_yellow_taxi/models/schema.yml << 'EOF'
 version: 2
 
 models:
@@ -26,7 +26,7 @@ EOF
 Запустите тесты:
 
 ```
-cd /root/my_dbt_project && dbt test
+cd /root/nyc_yellow_taxi && dbt test
 ```{{exec}}
 
 Все 4 теста должны пройти успешно. dbt проверил, что:

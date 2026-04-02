@@ -22,6 +22,13 @@ SETTINGS
 mkdir -p /root/data
 cp /root/assets/yellow_tripdata_2023-01.parquet /root/data/ 2>/dev/null || true
 
+# Project info file visible in the IDE workspace
+mkdir -p /root/workspace
+cat > /root/workspace/ProjectInfo.txt << 'PINFO'
+Project Name: nyc_yellow_taxi
+Database type: duckdb
+PINFO
+
 apt-get update -qq && apt-get install -y -qq python3-pip python3-venv > /dev/null 2>&1
 
 python3 -m venv /opt/dbt-env

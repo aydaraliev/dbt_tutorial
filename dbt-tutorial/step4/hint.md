@@ -1,1 +1,1 @@
-Выполните `dbt init my_dbt_project` и выберите duckdb. Затем настройте профиль и выполните `dbt debug` для проверки подключения.
+Выполните `dbt init nyc_yellow_taxi`, выберите duckdb, затем `cd nyc_yellow_taxi` и `ls`.

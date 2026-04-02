@@ -3,13 +3,13 @@
 Сначала удалите примеры моделей, которые dbt сгенерировал автоматически:
 
 ```
-rm -rf /root/my_dbt_project/models/example
+rm -rf /root/nyc_yellow_taxi/models/example
 ```{{exec}}
 
 Создайте модель, которая считает количество поездок и среднюю стоимость по зонам посадки из набора данных NYC Yellow Taxi:
 
 ```
-cat > /root/my_dbt_project/models/taxi_zone_summary.sql << 'EOF'
+cat > /root/nyc_yellow_taxi/models/taxi_zone_summary.sql << 'EOF'
 SELECT
     PULocationID AS pickup_zone_id,
     COUNT(*) AS total_trips,
@@ -24,7 +24,7 @@ EOF
 Теперь запустите dbt:
 
 ```
-cd /root/my_dbt_project && dbt run
+cd /root/nyc_yellow_taxi && dbt run
 ```{{exec}}
 
 В выводе должно быть сообщение об успешном создании модели `taxi_zone_summary`.
