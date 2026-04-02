@@ -1,6 +1,7 @@
 #!/bin/bash
 # Create profiles.yml template with blanks for the user to fill in
-cat > /root/nyc_yellow_taxi/profiles.yml << 'EOF'
+mkdir -p /root/.dbt
+cat > /root/.dbt/profiles.yml << 'EOF'
 # Modify the project name
 _____:
   outputs:

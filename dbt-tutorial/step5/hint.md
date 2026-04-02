@@ -1,1 +1,1 @@
-Замените `_____` в первой строке на `nyc_yellow_taxi`, в строке `type:` на `duckdb`, затем выполните `dbt debug`.
+Откройте `~/.dbt/profiles.yml`, замените `_____` в первой строке на `nyc_yellow_taxi`, в строке `type:` на `duckdb`. Затем `cd ~/nyc_yellow_taxi && dbt debug`.
