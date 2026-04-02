@@ -1,39 +1,15 @@
-# Запуск dbt test
+# Иерархии моделей
 
-Добавьте файл схемы с тестами для модели:
+В dbt модели могут зависеть друг от друга. Чтобы dbt знал о зависимостях и выполнял модели в правильном порядке, используется Jinja-функция `{{ ref('model_name') }}` вместо прямого указания имени таблицы.
 
-```
-cat > /root/nyc_yellow_taxi/models/taxi_rides/schema.yml << 'EOF'
-version: 2
+Обратите внимание на отступы при написании функций — в Jinja важны пробелы.
 
-models:
-  - name: taxi_rides_raw
-    description: "Сырые данные поездок NYC Yellow Taxi"
-    columns:
-      - name: VendorID
-        tests:
-          - not_null
-      - name: total_amount
-        tests:
-          - not_null
-      - name: trip_distance
-        tests:
-          - not_null
-EOF
-```{{exec}}
+## Задание
 
-Запустите тесты:
+- Выполните `dbt run` и обратите внимание на ошибку.
 
-```
-cd /root/nyc_yellow_taxi && dbt test
-```{{exec}}
+- Откройте файл модели, на который указывает ошибка.
 
-Все 3 теста должны пройти успешно.
+- Замените прямую ссылку `taxi_rides_raw` на Jinja-функцию `{{ ref('taxi_rides_raw') }}`.
 
-Также можно запустить всё вместе:
-
-```
-dbt build
-```{{exec}}
-
-`dbt build` запускает модели и тесты в порядке зависимостей одной командой.
+- Запустите проект снова с флагом `-f` для полного обновления: `dbt run -f`.

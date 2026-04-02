@@ -79,10 +79,11 @@
         "foreground": "step10/foreground.sh"
       },
       {
-        "title": "Запуск dbt test",
+        "title": "Иерархии моделей",
         "text": "step11/text.md",
         "verify": "step11/verify.sh",
-        "hint": "step11/hint.md"
+        "hint": "step11/hint.md",
+        "foreground": "step11/foreground.sh"
       }
     ],
     "finish": {
