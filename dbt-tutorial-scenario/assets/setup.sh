@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Create workspace placeholder file
+mkdir -p /root/workspace
+echo "This is the code editor window. The terminal window is the panel below." > /root/workspace/script.sh
+
 # Install PostgreSQL
 apt-get update -qq && apt-get install -y -qq postgresql postgresql-contrib python3-pip python3-venv > /dev/null 2>&1
 

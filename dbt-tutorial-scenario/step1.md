@@ -1,27 +1,7 @@
-# Install dbt and set up PostgreSQL
+In this first exercise, you'll get familiar with the terminal in the IDE editor, and you'll run a simple dbt command.
 
-A setup script is running in the background to install PostgreSQL and dbt.
+## Instructions
 
-Wait for the setup to complete:
+- In the terminal window (the bottom right panel with the text `repl:~/workspace` ), run the command `dbt` .
 
-```
-while [ ! -f /tmp/setup-done ]; do echo "Waiting for setup..."; sleep 2; done && echo "Setup complete!"
-```{{exec}}
-
-Verify that dbt is installed:
-
-```
-dbt --version
-```{{exec}}
-
-Verify that PostgreSQL is running and has our sample data:
-
-```
-sudo -u postgres psql -d dbt_db -c "SELECT * FROM raw.customers;"
-```{{exec}}
-
-```
-sudo -u postgres psql -d dbt_db -c "SELECT * FROM raw.orders;"
-```{{exec}}
-
-You should see 3 customers and 5 orders in the output.
+- Use the scroll bars to review some of the details shown.

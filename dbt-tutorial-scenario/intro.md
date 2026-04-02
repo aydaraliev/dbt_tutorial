@@ -1,12 +1,10 @@
-# Getting Started with dbt
+# Introduction to dbt
 
-In this tutorial you will:
+In this course you will:
 
-1. Install **dbt-postgres** and set up a PostgreSQL database
-2. Initialize a new dbt project
-3. Create a simple SQL model and run it with `dbt run`
-4. Add a test and run it with `dbt test`
+1. Run dbt and explore its CLI
+2. Initialize a new dbt project connected to PostgreSQL
+3. Create a SQL model and run it with `dbt run`
+4. Add data quality tests and run them with `dbt test`
 
-By the end, you will have a working dbt project connected to a real database.
-
-Let's get started!
+A setup script is running in the background to install PostgreSQL and dbt. It will be ready by the time you start the first exercise.
