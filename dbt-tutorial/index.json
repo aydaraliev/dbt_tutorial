@@ -8,7 +8,7 @@
     },
     "assets": {
       "host01": [
-        {"file": "assets/yellow_tripdata_2023-01.parquet", "target": "/root/assets/"}
+        {"file": "yellow_tripdata_2023-01.parquet", "target": "/root/data/"}
       ]
     },
     "steps": [

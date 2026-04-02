@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 apt-get update -qq && apt-get install -y -qq python3-pip python3-venv > /dev/null 2>&1
 
 python3 -m venv /opt/dbt-env
