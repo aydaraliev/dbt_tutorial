@@ -50,4 +50,7 @@ python3 -m venv /opt/dbt-env
 
 ln -sf /opt/dbt-env/bin/dbt /usr/local/bin/dbt
 
+# PROMPT_COMMAND writes every command to a log file for verify scripts
+echo 'export PROMPT_COMMAND="history 1 >> /tmp/cmd_history"' >> /root/.bashrc
+
 touch /tmp/setup-done
