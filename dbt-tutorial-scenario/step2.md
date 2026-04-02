@@ -1,15 +1,15 @@
-# Initialize a dbt project
+# Инициализация проекта dbt
 
-Create a new dbt project:
+Создайте новый проект dbt:
 
 ```
 cd /root && dbt init my_dbt_project
 ```{{exec}}
 
-When prompted:
-- Choose **postgres** as the database (enter `1`)
+Когда появится запрос:
+- Выберите **postgres** в качестве базы данных (введите `1`)
 
-Now configure the connection profile. Replace the default profile with our settings:
+Теперь настроим профиль подключения. Заменим стандартный профиль нашими настройками:
 
 ```
 mkdir -p /root/.dbt && cat > /root/.dbt/profiles.yml << 'EOF'
@@ -28,10 +28,10 @@ my_dbt_project:
 EOF
 ```{{exec}}
 
-Navigate into the project and test the connection:
+Перейдите в директорию проекта и проверьте подключение:
 
 ```
 cd /root/my_dbt_project && dbt debug
 ```{{exec}}
 
-You should see **All checks passed!** at the bottom. This confirms dbt can connect to PostgreSQL.
+Внизу вывода должно быть **All checks passed!** — это подтверждает, что dbt может подключиться к PostgreSQL.

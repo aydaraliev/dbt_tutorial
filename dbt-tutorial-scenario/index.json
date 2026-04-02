@@ -1,26 +1,26 @@
 {
-  "title": "Getting Started with dbt",
-  "description": "Set up a dbt project with PostgreSQL and run your first model",
+  "title": "Введение в dbt",
+  "description": "Настройка проекта dbt с PostgreSQL и запуск первой модели",
   "details": {
     "intro": {
       "text": "intro.md"
     },
     "steps": [
       {
-        "title": "Install dbt and set up PostgreSQL",
+        "title": "Установка dbt и настройка PostgreSQL",
         "text": "step1.md",
         "background": "assets/setup.sh"
       },
       {
-        "title": "Initialize a dbt project",
+        "title": "Инициализация проекта dbt",
         "text": "step2.md"
       },
       {
-        "title": "Create and run your first model",
+        "title": "Создание и запуск первой модели",
         "text": "step3.md"
       },
       {
-        "title": "Run dbt test",
+        "title": "Запуск dbt test",
         "text": "step4.md"
       }
     ],

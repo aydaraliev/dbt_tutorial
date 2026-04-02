@@ -1,12 +1,12 @@
-# Create and run your first model
+# Создание и запуск первой модели
 
-First, remove the example models that dbt generated:
+Сначала удалите примеры моделей, которые dbt сгенерировал автоматически:
 
 ```
 rm -rf /root/my_dbt_project/models/example
 ```{{exec}}
 
-Create a model that joins customers with their order summaries:
+Создайте модель, которая объединяет клиентов с агрегированными данными по заказам:
 
 ```
 cat > /root/my_dbt_project/models/customer_orders.sql << 'EOF'
@@ -32,18 +32,18 @@ FROM customer_orders
 EOF
 ```{{exec}}
 
-Now run dbt:
+Теперь запустите dbt:
 
 ```
 cd /root/my_dbt_project && dbt run
 ```{{exec}}
 
-You should see output showing that the `customer_orders` model was created successfully.
+В выводе должно быть сообщение об успешном создании модели `customer_orders`.
 
-Verify the result by querying the new view:
+Проверьте результат, выполнив запрос к новому представлению:
 
 ```
 sudo -u postgres psql -d dbt_db -c "SELECT * FROM public.customer_orders;"
 ```{{exec}}
 
-dbt created a **view** in the `public` schema from your SQL model.
+dbt создал **представление (view)** в схеме `public` из вашей SQL-модели.

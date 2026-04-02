@@ -1,20 +1,20 @@
-# Install dbt and set up PostgreSQL
+# Установка dbt и настройка PostgreSQL
 
-A setup script is running in the background to install PostgreSQL and dbt.
+В фоновом режиме выполняется скрипт установки PostgreSQL и dbt.
 
-Wait for the setup to complete:
+Дождитесь завершения установки:
 
 ```
-while [ ! -f /tmp/setup-done ]; do echo "Waiting for setup..."; sleep 2; done && echo "Setup complete!"
+while [ ! -f /tmp/setup-done ]; do echo "Ожидание установки..."; sleep 2; done && echo "Установка завершена!"
 ```{{exec}}
 
-Verify that dbt is installed:
+Проверьте, что dbt установлен:
 
 ```
 dbt --version
 ```{{exec}}
 
-Verify that PostgreSQL is running and has our sample data:
+Проверьте, что PostgreSQL запущен и содержит тестовые данные:
 
 ```
 sudo -u postgres psql -d dbt_db -c "SELECT * FROM raw.customers;"
@@ -24,4 +24,4 @@ sudo -u postgres psql -d dbt_db -c "SELECT * FROM raw.customers;"
 sudo -u postgres psql -d dbt_db -c "SELECT * FROM raw.orders;"
 ```{{exec}}
 
-You should see 3 customers and 5 orders in the output.
+В выводе должно быть 3 клиента и 5 заказов.
