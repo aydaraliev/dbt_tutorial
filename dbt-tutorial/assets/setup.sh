@@ -48,9 +48,12 @@ INSERT INTO raw.orders (id, customer_id, amount, status, ordered_at) VALUES
 python3 -m venv /opt/dbt-env
 /opt/dbt-env/bin/pip install --quiet dbt-postgres
 
-ln -sf /opt/dbt-env/bin/dbt /usr/local/bin/dbt
-
-# PROMPT_COMMAND writes every command to a log file for verify scripts
-echo 'export PROMPT_COMMAND="history 1 >> /tmp/cmd_history"' >> /root/.bashrc
+# dbt wrapper: logs every invocation then calls the real binary
+cat > /usr/local/bin/dbt << 'WRAPPER'
+#!/bin/bash
+echo "$(date -Iseconds) dbt $*" >> /tmp/dbt_history
+exec /opt/dbt-env/bin/dbt "$@"
+WRAPPER
+chmod +x /usr/local/bin/dbt
 
 touch /tmp/setup-done

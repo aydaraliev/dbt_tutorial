@@ -1,2 +1,3 @@
 #!/bin/bash
-test -f /tmp/setup-done && which dbt > /dev/null 2>&1
+# User must have run "dbt" (bare command, no subcommand)
+grep -q "dbt$" /tmp/dbt_history 2>/dev/null
