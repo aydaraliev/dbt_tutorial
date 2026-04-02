@@ -1,27 +1,35 @@
 {
   "title": "Введение в dbt",
-  "description": "Настройка проекта dbt с PostgreSQL и запуск первой модели",
+  "description": "Изучите основы dbt: запуск команд, создание моделей и тестирование качества данных",
   "details": {
     "intro": {
-      "text": "intro.md"
+      "text": "intro.md",
+      "background": "assets/setup.sh"
     },
     "steps": [
       {
-        "title": "Установка dbt и настройка PostgreSQL",
+        "title": "Запуск dbt",
         "text": "step1.md",
-        "background": "assets/setup.sh"
+        "verify": "assets/step1-verify.sh",
+        "hint": "step1-hint.md"
       },
       {
         "title": "Инициализация проекта dbt",
-        "text": "step2.md"
+        "text": "step2.md",
+        "verify": "assets/step2-verify.sh",
+        "hint": "step2-hint.md"
       },
       {
         "title": "Создание и запуск первой модели",
-        "text": "step3.md"
+        "text": "step3.md",
+        "verify": "assets/step3-verify.sh",
+        "hint": "step3-hint.md"
       },
       {
         "title": "Запуск dbt test",
-        "text": "step4.md"
+        "text": "step4.md",
+        "verify": "assets/step4-verify.sh",
+        "hint": "step4-hint.md"
       }
     ],
     "finish": {
@@ -30,5 +38,8 @@
   },
   "backend": {
     "imageid": "ubuntu"
+  },
+  "interface": {
+    "layout": "ide"
   }
 }

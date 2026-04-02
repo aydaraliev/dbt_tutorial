@@ -1,17 +1,16 @@
 #!/bin/bash
 
-# Install PostgreSQL
+mkdir -p /root/workspace
+echo "This is the code editor window. The terminal window is the panel below." > /root/workspace/script.sh
+
 apt-get update -qq && apt-get install -y -qq postgresql postgresql-contrib python3-pip python3-venv > /dev/null 2>&1
 
-# Start PostgreSQL
 service postgresql start
 
-# Create database and user for dbt
 sudo -u postgres psql -c "CREATE USER dbt_user WITH PASSWORD 'dbt_pass';"
 sudo -u postgres psql -c "CREATE DATABASE dbt_db OWNER dbt_user;"
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE dbt_db TO dbt_user;"
 
-# Seed some raw data for the tutorial
 sudo -u postgres psql -d dbt_db -c "
 CREATE SCHEMA raw;
 GRANT ALL ON SCHEMA raw TO dbt_user;
@@ -46,11 +45,9 @@ INSERT INTO raw.orders (id, customer_id, amount, status, ordered_at) VALUES
 (5, 2, 200.00, 'pending', '2024-03-20');
 "
 
-# Install dbt in a virtual environment
 python3 -m venv /opt/dbt-env
 /opt/dbt-env/bin/pip install --quiet dbt-postgres
 
-# Make dbt available globally
 ln -sf /opt/dbt-env/bin/dbt /usr/local/bin/dbt
 
 touch /tmp/setup-done
