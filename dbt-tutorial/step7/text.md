@@ -4,21 +4,11 @@
 
 В файле `taxi_rides_raw.sql` уже есть шаблон запроса с CTE и пропуском. Для проверки результата используйте скрипт `./datacheck` — это Python-скрипт для валидации данных, он не является частью dbt.
 
-## Задание
-
-- Выполните `dbt run` и обратите внимание на ошибку.
-
-- Исправьте запрос в файле `taxi_rides_raw.sql`. Замените `_____` на:
-
-  `select * from read_parquet('yellow_tripdata_2023-01-partial.parquet')`
-
-- Запустите проект снова и убедитесь, что ошибка исправлена.
-
-- Выполните `./datacheck`, чтобы убедиться, что в представлении 500000 записей.
+Запустите `dbt run` — вы увидите ошибку. Исправьте запрос в `taxi_rides_raw.sql`, запустите снова и проверьте результат скриптом `./datacheck`.
 
 <details>
 <summary>Подсказка</summary>
 
-Замените `_____` на `select * from read_parquet('yellow_tripdata_2023-01-partial.parquet')`, затем `dbt run` и `./datacheck`.
+Замените `_____` на `select * from read_parquet('yellow_tripdata_2023-01-partial.parquet')`, затем `dbt run` и `./datacheck` (ожидается 500000 записей).
 
 </details>

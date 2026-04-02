@@ -2,19 +2,11 @@
 
 dbt использует Jinja — язык шаблонов, который позволяет генерировать SQL-код динамически. В файле `models/taxi_rides/total_amounts.sql` используется цикл `{% for %}` для перебора колонок. Вам не нужно понимать сам SQL — просто сравните шаблон с результатом компиляции.
 
-## Задание
-
-- Изучите файл `models/taxi_rides/total_amounts.sql` и обратите внимание на Jinja-синтаксис.
-
-- Выполните команду `dbt compile` для генерации скомпилированного SQL.
-
-- Откройте файл `target/compiled/nyc_yellow_taxi/models/taxi_rides/total_amounts.sql` в редакторе.
-
-- Сравните исходный шаблон и скомпилированный результат. После сравнения нажмите Check.
+Скомпилируйте проект и сравните исходный шаблон `models/taxi_rides/total_amounts.sql` с результатом компиляции.
 
 <details>
 <summary>Подсказка</summary>
 
-Выполните `dbt compile`, затем откройте `target/compiled/nyc_yellow_taxi/models/taxi_rides/total_amounts.sql`.
+`dbt compile`, затем откройте `target/compiled/nyc_yellow_taxi/models/taxi_rides/total_amounts.sql`.
 
 </details>
