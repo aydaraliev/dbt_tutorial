@@ -22,6 +22,18 @@ echo "$RESULT"
 SCRIPT
 chmod +x /root/nyc_yellow_taxi/datacheck
 
+# Create data dictionary
+cat > /root/nyc_yellow_taxi/data_dictionary.txt << 'DICT'
+NYC Yellow Taxi - Payment Type Codes
+=====================================
+1 = Credit card
+2 = Cash
+3 = No charge
+4 = Dispute
+5 = Unknown
+6 = Voided trip
+DICT
+
 # Create the model with blanks for the user to fill in
 cat > /root/nyc_yellow_taxi/models/taxi_rides/total_creditcard_riders_by_day.sql << 'EOF'
 
