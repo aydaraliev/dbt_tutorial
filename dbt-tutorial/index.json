@@ -32,16 +32,23 @@
         "hint": "step4/hint.md"
       },
       {
-        "title": "Создание и запуск первой модели",
+        "title": "Настройка профиля проекта",
         "text": "step5/text.md",
         "verify": "step5/verify.sh",
-        "hint": "step5/hint.md"
+        "hint": "step5/hint.md",
+        "foreground": "step5/foreground.sh"
       },
       {
-        "title": "Запуск dbt test",
+        "title": "Создание и запуск первой модели",
         "text": "step6/text.md",
         "verify": "step6/verify.sh",
         "hint": "step6/hint.md"
+      },
+      {
+        "title": "Запуск dbt test",
+        "text": "step7/text.md",
+        "verify": "step7/verify.sh",
+        "hint": "step7/hint.md"
       }
     ],
     "finish": {

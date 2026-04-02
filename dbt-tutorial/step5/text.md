@@ -1,32 +1,13 @@
-# Создание и запуск первой модели
+# Настройка профиля проекта
 
-Сначала удалите примеры моделей, которые dbt сгенерировал автоматически:
+Вы инициализировали проект dbt. Теперь необходимо настроить профиль подключения — файл `profiles.yml`, который определяет, где находится база данных. dbt использует YAML-файлы для конфигурации — важно соблюдать отступы и форматирование.
 
-```
-rm -rf /root/nyc_yellow_taxi/models/example
-```{{exec}}
+## Задание
 
-Создайте модель, которая считает количество поездок и среднюю стоимость по зонам посадки из набора данных NYC Yellow Taxi:
+- Откройте файл `nyc_yellow_taxi/profiles.yml` в редакторе.
 
-```
-cat > /root/nyc_yellow_taxi/models/taxi_zone_summary.sql << 'EOF'
-SELECT
-    PULocationID AS pickup_zone_id,
-    COUNT(*) AS total_trips,
-    ROUND(AVG(total_amount), 2) AS avg_total_amount,
-    ROUND(AVG(trip_distance), 2) AS avg_distance
-FROM read_parquet('/root/data/yellow_tripdata_2023-01.parquet')
-GROUP BY PULocationID
-ORDER BY total_trips DESC
-EOF
-```{{exec}}
+- Измените имя проекта (первая строка) на `nyc_yellow_taxi`.
 
-Теперь запустите dbt:
+- Измените `type:` на `duckdb`.
 
-```
-cd /root/nyc_yellow_taxi && dbt run
-```{{exec}}
-
-В выводе должно быть сообщение об успешном создании модели `taxi_zone_summary`.
-
-dbt создал **представление (view)** в DuckDB из вашей SQL-модели.
+- В терминале выполните команду `dbt debug`, чтобы убедиться, что ошибок нет.
