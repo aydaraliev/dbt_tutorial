@@ -1,15 +1,39 @@
-# Обновление модели dbt
+# Запуск dbt test
 
-Необходимо посчитать всех пользователей **кредитных карт** по дням на основе текущих моделей dbt. Новая модель называется `total_creditcard_riders_by_day` и содержит колонки `day` и `total_cc_riders`.
+Добавьте файл схемы с тестами для модели:
 
-Модель `taxi_rides_raw` уже доступна как SQL-таблица, к которой можно обращаться напрямую.
+```
+cat > /root/nyc_yellow_taxi/models/taxi_rides/schema.yml << 'EOF'
+version: 2
 
-В NYC Yellow Taxi данных `payment_type = 1` означает оплату кредитной картой.
+models:
+  - name: taxi_rides_raw
+    description: "Сырые данные поездок NYC Yellow Taxi"
+    columns:
+      - name: VendorID
+        tests:
+          - not_null
+      - name: total_amount
+        tests:
+          - not_null
+      - name: trip_distance
+        tests:
+          - not_null
+EOF
+```{{exec}}
 
-## Задание
+Запустите тесты:
 
-- Заполните пропуски в файле `total_creditcard_riders_by_day.sql`: замените `____` на нужную агрегатную функцию и значение фильтра.
+```
+cd /root/nyc_yellow_taxi && dbt test
+```{{exec}}
 
-- Выполните команду `dbt run` для материализации модели.
+Все 3 теста должны пройти успешно.
 
-- Выполните `./datacheck` в директории `nyc_yellow_taxi` для проверки результата.
+Также можно запустить всё вместе:
+
+```
+dbt build
+```{{exec}}
+
+`dbt build` запускает модели и тесты в порядке зависимостей одной командой.

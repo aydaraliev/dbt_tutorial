@@ -44,31 +44,24 @@
         "foreground": "step5/foreground.sh"
       },
       {
-        "title": "Создание модели dbt",
+        "title": "Запуск проекта",
         "text": "step6/text.md",
         "verify": "step6/verify.sh",
         "hint": "step6/hint.md",
         "foreground": "step6/foreground.sh"
       },
       {
-        "title": "Запуск проекта",
+        "title": "Обновление модели dbt",
         "text": "step7/text.md",
         "verify": "step7/verify.sh",
         "hint": "step7/hint.md",
         "foreground": "step7/foreground.sh"
       },
       {
-        "title": "Обновление модели dbt",
+        "title": "Запуск dbt test",
         "text": "step8/text.md",
         "verify": "step8/verify.sh",
-        "hint": "step8/hint.md",
-        "foreground": "step8/foreground.sh"
-      },
-      {
-        "title": "Запуск dbt test",
-        "text": "step9/text.md",
-        "verify": "step9/verify.sh",
-        "hint": "step9/hint.md"
+        "hint": "step8/hint.md"
       }
     ],
     "finish": {
