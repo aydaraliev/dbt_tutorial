@@ -1,8 +1,12 @@
 # Версия dbt
 
-<details>
-<summary>Подсказка</summary>
+## Задание
 
-Выполните `dbt --version`.
+Узнайте, какая версия dbt установлена в системе.
+
+<details>
+<summary>Решение</summary>
+
+`dbt --version`
 
 </details>

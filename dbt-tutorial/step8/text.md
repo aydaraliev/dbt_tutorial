@@ -6,10 +6,12 @@
 
 Описание всех колонок и коды типов оплаты находятся в файле `data_dictionary.txt` в корне проекта.
 
-Изучите `data_dictionary.txt`, заполните пропуски в `total_creditcard_riders_by_day.sql`, материализуйте модель и проверьте результат.
+## Задание
+
+Изучите словарь данных, заполните пропуски в `total_creditcard_riders_by_day.sql`, материализуйте модель и проверьте результат.
 
 <details>
-<summary>Подсказка</summary>
+<summary>Решение</summary>
 
 Замените первый `____` на `count(*)`, второй на `1` (credit card payment type). Затем `dbt run` и `./datacheck`.
 

@@ -2,11 +2,13 @@
 
 Вы будете работать с набором данных NYC Yellow Taxi Cab. Название проекта: `nyc_yellow_taxi`, база данных: `duckdb`.
 
-Инициализируйте проект, перейдите в его директорию и убедитесь, что в нём есть шесть поддиректорий (`analyses`, `macros`, `models`, `seeds`, `snapshots`, `tests`).
+## Задание
+
+Инициализируйте проект dbt, перейдите в его директорию и убедитесь, что в нём есть шесть поддиректорий (`analyses`, `macros`, `models`, `seeds`, `snapshots`, `tests`).
 
 <details>
-<summary>Подсказка</summary>
+<summary>Решение</summary>
 
-`dbt init nyc_yellow_taxi` → выберите duckdb → `cd nyc_yellow_taxi` → `ls`.
+`dbt init nyc_yellow_taxi` → выберите duckdb → `cd nyc_yellow_taxi` → `ls`
 
 </details>

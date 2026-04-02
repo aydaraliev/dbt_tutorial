@@ -1,8 +1,12 @@
 # Получение справки
 
-<details>
-<summary>Подсказка</summary>
+## Задание
 
-Выполните `dbt -h`.
+Получите список всех доступных команд dbt.
+
+<details>
+<summary>Решение</summary>
+
+`dbt -h`
 
 </details>

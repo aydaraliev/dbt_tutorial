@@ -10,10 +10,12 @@
 
 Обратите внимание на отступы при написании функций — в Jinja важны пробелы.
 
-В файле `creditcard_riders_by_day.sql` замените прямую ссылку на таблицу Jinja-функцией `ref()` и обновите модели.
+## Задание
+
+В файле `creditcard_riders_by_day.sql` замените прямую ссылку на таблицу Jinja-функцией и обновите модели.
 
 <details>
-<summary>Подсказка</summary>
+<summary>Решение</summary>
 
 Замените `from taxi_rides_raw` на `from {{ ref('taxi_rides_raw') }}`, затем `dbt run`.
 
