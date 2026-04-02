@@ -9,27 +9,27 @@
     "steps": [
       {
         "title": "Запуск dbt",
-        "text": "step1.md",
-        "verify": "assets/step1-verify.sh",
-        "hint": "step1-hint.md"
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh",
+        "hint": "step1/hint.md"
       },
       {
         "title": "Инициализация проекта dbt",
-        "text": "step2.md",
-        "verify": "assets/step2-verify.sh",
-        "hint": "step2-hint.md"
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh",
+        "hint": "step2/hint.md"
       },
       {
         "title": "Создание и запуск первой модели",
-        "text": "step3.md",
-        "verify": "assets/step3-verify.sh",
-        "hint": "step3-hint.md"
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh",
+        "hint": "step3/hint.md"
       },
       {
         "title": "Запуск dbt test",
-        "text": "step4.md",
-        "verify": "assets/step4-verify.sh",
-        "hint": "step4-hint.md"
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh",
+        "hint": "step4/hint.md"
       }
     ],
     "finish": {
