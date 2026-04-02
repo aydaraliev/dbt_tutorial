@@ -1,43 +1,32 @@
-# Запуск dbt test
+# Создание и запуск первой модели
 
-Добавьте файл схемы с тестами для модели:
+Сначала удалите примеры моделей, которые dbt сгенерировал автоматически:
 
 ```
-cat > /root/my_dbt_project/models/schema.yml << 'EOF'
-version: 2
+rm -rf /root/my_dbt_project/models/example
+```{{exec}}
 
-models:
-  - name: customer_orders
-    description: "Сводка заказов по клиентам"
-    columns:
-      - name: customer_id
-        tests:
-          - unique
-          - not_null
-      - name: name
-        tests:
-          - not_null
-      - name: total_orders
-        tests:
-          - not_null
+Создайте модель, которая считает количество поездок и среднюю стоимость по зонам посадки из набора данных NYC Yellow Taxi:
+
+```
+cat > /root/my_dbt_project/models/taxi_zone_summary.sql << 'EOF'
+SELECT
+    PULocationID AS pickup_zone_id,
+    COUNT(*) AS total_trips,
+    ROUND(AVG(total_amount), 2) AS avg_total_amount,
+    ROUND(AVG(trip_distance), 2) AS avg_distance
+FROM read_parquet('/root/data/yellow_tripdata_2023-01.parquet')
+GROUP BY PULocationID
+ORDER BY total_trips DESC
 EOF
 ```{{exec}}
 
-Запустите тесты:
+Теперь запустите dbt:
 
 ```
-cd /root/my_dbt_project && dbt test
+cd /root/my_dbt_project && dbt run
 ```{{exec}}
 
-Все 4 теста должны пройти успешно. dbt проверил, что:
-- `customer_id` уникален и не содержит NULL
-- `name` не содержит NULL
-- `total_orders` не содержит NULL
+В выводе должно быть сообщение об успешном создании модели `taxi_zone_summary`.
 
-Также можно запустить всё вместе:
-
-```
-dbt build
-```{{exec}}
-
-`dbt build` запускает модели и тесты в порядке зависимостей одной командой.
+dbt создал **представление (view)** в DuckDB из вашей SQL-модели.
