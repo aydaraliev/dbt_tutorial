@@ -1,0 +1,34 @@
+{
+  "title": "Getting Started with dbt",
+  "description": "Set up a dbt project with PostgreSQL and run your first model",
+  "details": {
+    "intro": {
+      "text": "intro.md"
+    },
+    "steps": [
+      {
+        "title": "Install dbt and set up PostgreSQL",
+        "text": "step1.md",
+        "background": "assets/setup.sh"
+      },
+      {
+        "title": "Initialize a dbt project",
+        "text": "step2.md"
+      },
+      {
+        "title": "Create and run your first model",
+        "text": "step3.md"
+      },
+      {
+        "title": "Run dbt test",
+        "text": "step4.md"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}
