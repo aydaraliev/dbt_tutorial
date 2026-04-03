@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dbt (Data Build Tool) — Учебное пособие</title>
+    <style>
+@page {
+    size: A4;
+    margin: 2cm 2.5cm;
+    @bottom-center {
+        content: counter(page);
+        font-size: 10px;
+        color: #999;
+    }
+}
+
+body {
+    font-family: 'Segoe UI', 'Noto Sans', 'Liberation Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #222;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 40px;
+}
+
+h1 {
+    color: #FF694A;
+    font-size: 32px;
+    border-bottom: 3px solid #FF694A;
+    padding-bottom: 8px;
+    margin-top: 40px;
+    page-break-after: avoid;
+}
+
+h2 {
+    color: #1a1a2e;
+    font-size: 24px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 6px;
+    margin-top: 36px;
+    page-break-after: avoid;
+}
+
+h3 {
+    color: #333;
+    font-size: 18px;
+    margin-top: 24px;
+    page-break-after: avoid;
+}
+
+h4 {
+    color: #555;
+    font-size: 16px;
+    margin-top: 20px;
+    page-break-after: avoid;
+}
+
+code {
+    background: #f4f4f4;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: 'Consolas', 'Fira Code', 'Source Code Pro', monospace;
+    font-size: 13px;
+}
+
+pre {
+    background: #f5f5f5;
+    border-left: 4px solid #FF694A;
+    border-radius: 4px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 12.5px;
+    line-height: 1.5;
+    page-break-inside: avoid;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 13px;
+    page-break-inside: avoid;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+th {
+    background: #1a1a2e;
+    color: #fff;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background: #fafafa;
+}
+
+blockquote {
+    border-left: 4px solid #FF694A;
+    padding: 8px 16px;
+    margin: 16px 0;
+    font-style: italic;
+    color: #555;
+    background: #fff8f6;
+    border-radius: 0 4px 4px 0;
+}
+
+hr {
+    border: none;
+    border-top: 2px solid #eee;
+    margin: 32px 0;
+}
+
+a {
+    color: #FF694A;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul, ol {
+    padding-left: 24px;
+}
+
+li {
+    margin-bottom: 4px;
+}
+
+strong {
+    color: #1a1a2e;
+}
+
+/* TOC styling */
+h2:first-of-type + ul {
+    columns: 2;
+    column-gap: 24px;
+}
+
+/* Print-friendly */
+@media print {
+    body { padding: 0; }
+    h2 { page-break-before: auto; }
+}
+</style>
+</head>
+<body>
+<h1 id="dbt-data-build-tool-">dbt (Data Build Tool) -- Учебное пособие</h1>
+<h2 id="_1">Содержание</h2>
+<ol>
+<li><a href="#1-введение-в-dbt">Введение в dbt</a></li>
+<li><a href="#2-что-такое-dbt-и-зачем-он-нужен">Что такое dbt и зачем он нужен</a></li>
+<li><a href="#3-для-кого-предназначен-dbt">Для кого предназначен dbt</a></li>
+<li><a href="#4-установка-dbt">Установка dbt</a></li>
+<li><a href="#5-проект-dbt-структура-и-создание">Проект dbt: структура и создание</a></li>
+<li><a href="#6-профили-и-конфигурация-profilesyml">Профили и конфигурация (profiles.yml)</a></li>
+<li><a href="#7-duckdb-как-база-данных-для-обучения">DuckDB как база данных для обучения</a></li>
+<li><a href="#8-рабочий-процесс-в-dbt">Рабочий процесс в dbt</a></li>
+<li><a href="#9-команда-dbt-run">Команда dbt run</a></li>
+<li><a href="#10-стратегии-материализации">Стратегии материализации</a></li>
+<li><a href="#11-модели-данных-и-модели-в-dbt">Модели данных и модели в dbt</a></li>
+<li><a href="#12-создание-простой-модели">Создание простой модели</a></li>
+<li><a href="#13-чтение-данных-из-parquet">Чтение данных из Parquet</a></li>
+<li><a href="#14-обновление-моделей-dbt">Обновление моделей dbt</a></li>
+<li><a href="#15-конфигурационные-файлы-yaml">Конфигурационные файлы YAML</a></li>
+<li><a href="#16-тестирование-данных">Тестирование данных</a></li>
+<li><a href="#17-документация-в-dbt">Документация в dbt</a></li>
+<li><a href="#18-шаблоны-jinja">Шаблоны Jinja</a></li>
+<li><a href="#19-иерархия-моделей-и-dag">Иерархия моделей и DAG</a>
+- <a href="#шпаргалка-по-командам-dbt">Шпаргалка по командам</a></li>
+</ol>
+<hr />
+<h2 id="1-dbt">1. Введение в dbt</h2>
+<h3 id="_2">Цели курса</h3>
+<ul>
+<li>Понять основные концепции dbt</li>
+<li>Освоить практическое применение dbt</li>
+<li>Понять, почему dbt важен для специалистов по данным</li>
+<li>Научиться ориентироваться в проекте dbt</li>
+<li>Писать и запускать базовые модели dbt</li>
+<li>Освоить один из самых востребованных инструментов в data engineering</li>
+</ul>
+<h3 id="_3">Предварительные требования</h3>
+<ul>
+<li>Опыт работы с SQL (базовый уровень и выше)</li>
+<li>Знакомство с командной строкой (терминалом)</li>
+<li>Базовое понимание конвейеров данных или моделирования данных -- желательно, но не обязательно</li>
+</ul>
+<p>Курс предполагает активное использование IDE -- практические задания рекомендуется выполнять параллельно с чтением.</p>
+<hr />
+<h2 id="2-dbt">2. Что такое dbt и зачем он нужен</h2>
+<p><strong>dbt</strong> -- <strong>Data Build Tool</strong>, инструмент, который отвечает за букву <strong>T</strong> (Transform) в подходе <strong>ELT</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Этап</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Extract</strong></td>
+<td>Данные извлекаются из источников (API, базы данных, файлы)</td>
+</tr>
+<tr>
+<td><strong>Load</strong></td>
+<td>Данные загружаются в хранилище "как есть"</td>
+</tr>
+<tr>
+<td><strong>Transform</strong></td>
+<td>Данные преобразуются в нужный формат -- <strong>здесь работает dbt</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="n">ETL</span><span class="o">:</span><span class="w"> </span><span class="err">Источник</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">Извлечение</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">Трансформация</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">Загрузка</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">Хранилище</span>
+<span class="n">ELT</span><span class="o">:</span><span class="w"> </span><span class="err">Источник</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">Извлечение</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">Загрузка</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">Хранилище</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="err">Трансформация</span><span class="w"> </span><span class="o">(</span><span class="n">dbt</span><span class="o">)</span>
+</code></pre></div>
+
+<h3 id="_4">Ключевые возможности</h3>
+<ol>
+<li><strong>Переключение между хранилищами</strong> -- Snowflake, BigQuery, PostgreSQL, DuckDB, ClickHouse, Redshift и др.</li>
+<li><strong>Совместная работа с SQL</strong> -- через git, как с обычным кодом</li>
+<li><strong>Трансляция между диалектами SQL</strong> -- упрощает миграцию между хранилищами</li>
+<li><strong>Определение моделей и трансформаций</strong> -- SQL-запросы оформляются как модели. Области применения: e-Commerce, мобильные приложения, IoT и др.</li>
+<li><strong>Определение связей между моделями</strong> -- например, Клиенты → Адреса → Заказы</li>
+<li><strong>Запуск трансформаций</strong> -- выполняет SQL в нужном порядке, материализует результат. Пример: конвертация сырых лог-файлов в структурированные таблицы</li>
+<li><strong>Тестирование качества данных</strong> -- проверки на уникальность, NOT NULL и др.</li>
+</ol>
+<hr />
+<h2 id="3-dbt">3. Для кого предназначен dbt</h2>
+<p>dbt предназначен для <strong>любых пользователей, которым нужно трансформировать данные</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Роль</th>
+<th>Как использует dbt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Дата-инженеры (Data Engineers)</strong></td>
+<td>Построение пайплайнов, оркестрация -- основные пользователи</td>
+</tr>
+<tr>
+<td><strong>Аналитики-инженеры (Analytics Engineers)</strong></td>
+<td>Моделирование, метрики, документация</td>
+</tr>
+<tr>
+<td><strong>Аналитики данных (Data Analysts)</strong></td>
+<td>Ad-hoc трансформации, отчёты</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Analytics Engineer</strong> -- роль, которая возникла во многом благодаря dbt. Это мост между data engineering и аналитикой: создаёт модели данных, описывает метрики, пишет тесты качества, ведёт документацию и обеспечивает надёжный self-service доступ к данным для аналитиков и бизнеса.</p>
+<p>Предпосылка: пользователь должен уметь работать с SQL.</p>
+<hr />
+<h2 id="4-dbt">4. Установка dbt</h2>
+<p><strong>dbt написан на Python</strong> и распространяется как Python-пакет через <code>pip</code>. Это означает, что для работы с dbt необходим установленный Python (рекомендуется 3.9+).</p>
+<p><strong>dbt Core</strong> -- open-source CLI, бесплатен. <strong>dbt Cloud</strong> -- проприетарная облачная платформа (платная). В курсе используется dbt Core.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Создать виртуальное окружение (рекомендуется)</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>dbt-env
+<span class="nb">source</span><span class="w"> </span>dbt-env/bin/activate<span class="w">  </span><span class="c1"># Linux/Mac</span>
+<span class="c1"># dbt-env\Scripts\activate   # Windows</span>
+
+<span class="c1"># Установка (для DuckDB)</span>
+pip<span class="w"> </span>install<span class="w"> </span>dbt-duckdb
+
+<span class="c1"># Другие адаптеры: dbt-postgres, dbt-snowflake, dbt-bigquery, dbt-clickhouse</span>
+
+<span class="c1"># Проверка</span>
+dbt<span class="w"> </span>--version
+dbt<span class="w"> </span>-h
+</code></pre></div>
+
+<h3 id="ide">Расширения для IDE</h3>
+<p>dbt активно поддерживается в популярных IDE через расширения, которые обеспечивают подсветку синтаксиса Jinja+SQL, автодополнение, навигацию по моделям и предпросмотр скомпилированного SQL.</p>
+<p><strong>Установка</strong>: в VS Code откройте панель Extensions (<code>Ctrl+Shift+X</code>), найдите расширение по имени и нажмите Install. В JetBrains: Settings → Plugins → Marketplace.</p>
+<p><strong>Топ-5 популярных расширений:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Расширение</th>
+<th>IDE</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="https://marketplace.visualstudio.com/items?itemName=innoverio.vscode-dbt-power-user">dbt Power User</a></strong></td>
+<td>VS Code</td>
+<td>Навигация по моделям, предпросмотр SQL, автодополнение <code>ref()</code> и <code>source()</code>, lineage graph прямо в редакторе</td>
+</tr>
+<tr>
+<td><strong><a href="https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml">Better Jinja</a></strong></td>
+<td>VS Code</td>
+<td>Подсветка синтаксиса Jinja внутри SQL, HTML и других файлов</td>
+</tr>
+<tr>
+<td><strong><a href="https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml">YAML</a></strong></td>
+<td>VS Code</td>
+<td>Валидация и автодополнение YAML-файлов (<code>schema.yml</code>, <code>dbt_project.yml</code>)</td>
+</tr>
+<tr>
+<td><strong><a href="https://marketplace.visualstudio.com/items?itemName=dorzey.vscode-sqlfluff">SQLFluff</a></strong></td>
+<td>VS Code</td>
+<td>Линтер SQL с поддержкой dbt-шаблонов и Jinja</td>
+</tr>
+<tr>
+<td><strong><a href="https://plugins.jetbrains.com/plugin/19950-dbt">dbt</a></strong></td>
+<td>JetBrains</td>
+<td>Поддержка dbt для PyCharm/IntelliJ: навигация, подсветка, автодополнение</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-dbt">5. Проект dbt: структура и создание</h2>
+<p>Проект dbt -- <strong>структурированная коллекция файлов</strong>: конфигурация, источники данных, SQL-запросы, шаблоны, документация, тесты.</p>
+<h3 id="_5">Структура директорий</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">NYC_YELLOW_TAXI</span><span class="o">/</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">analyses</span><span class="o">/</span><span class="w">            </span><span class="err">#</span><span class="w"> </span><span class="nx">Аналитические</span><span class="w"> </span><span class="nx">запросы</span><span class="w"> </span><span class="p">(</span><span class="nx">не</span><span class="w"> </span><span class="nx">материализуются</span><span class="p">)</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">dbt_packages</span><span class="o">/</span><span class="w">        </span><span class="err">#</span><span class="w"> </span><span class="nx">Установленные</span><span class="w"> </span><span class="nx">пакеты</span><span class="w"> </span><span class="p">(</span><span class="nx">dbt</span><span class="w"> </span><span class="nx">deps</span><span class="p">)</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">logs</span><span class="o">/</span><span class="w">                </span><span class="err">#</span><span class="w"> </span><span class="nx">Логи</span><span class="w"> </span><span class="nx">выполнения</span><span class="w"> </span><span class="p">(</span><span class="nx">dbt</span><span class="p">.</span><span class="nx">log</span><span class="p">)</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">macros</span><span class="o">/</span><span class="w">              </span><span class="err">#</span><span class="w"> </span><span class="nx">Макросы</span><span class="w"> </span><span class="p">(</span><span class="nx">переиспользуемые</span><span class="w"> </span><span class="nx">Jinja</span><span class="o">/</span><span class="nx">SQL</span><span class="p">)</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">models</span><span class="o">/</span><span class="w">              </span><span class="err">#</span><span class="w"> </span><span class="nx">Модели</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="nx">основная</span><span class="w"> </span><span class="nx">рабочая</span><span class="w"> </span><span class="nx">директория</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">taxi_rides</span><span class="o">/</span><span class="w">      </span><span class="err">#</span><span class="w"> </span><span class="nx">Поддиректория</span><span class="w"> </span><span class="nx">для</span><span class="w"> </span><span class="nx">группировки</span><span class="w"> </span><span class="nx">моделей</span>
+<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">taxi_rides_raw</span><span class="p">.</span><span class="nx">sql</span>
+<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="nx">avg_fare_per_day</span><span class="p">.</span><span class="nx">sql</span>
+<span class="err">│</span><span class="w">   </span><span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nx">total_creditcard_rides_per_day</span><span class="p">.</span><span class="nx">sql</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nx">model_properties</span><span class="p">.</span><span class="nx">yml</span><span class="w">  </span><span class="err">#</span><span class="w"> </span><span class="nx">Свойства</span><span class="w"> </span><span class="nx">моделей</span><span class="w"> </span><span class="p">(</span><span class="nx">описания</span><span class="p">,</span><span class="w"> </span><span class="nx">тесты</span><span class="p">)</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">seeds</span><span class="o">/</span><span class="w">               </span><span class="err">#</span><span class="w"> </span><span class="nx">CSV</span><span class="o">-</span><span class="nx">файлы</span><span class="w"> </span><span class="nx">для</span><span class="w"> </span><span class="nx">загрузки</span><span class="w"> </span><span class="nx">в</span><span class="w"> </span><span class="nx">хранилище</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">snapshots</span><span class="o">/</span><span class="w">           </span><span class="err">#</span><span class="w"> </span><span class="nx">Снапшоты</span><span class="w"> </span><span class="p">(</span><span class="nx">SCD</span><span class="w"> </span><span class="nx">Type</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">target</span><span class="o">/</span><span class="w">              </span><span class="err">#</span><span class="w"> </span><span class="nx">Скомпилированный</span><span class="w"> </span><span class="nx">SQL</span><span class="w"> </span><span class="nx">и</span><span class="w"> </span><span class="nx">артефакты</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">tests</span><span class="o">/</span><span class="w">               </span><span class="err">#</span><span class="w"> </span><span class="nx">Пользовательские</span><span class="w"> </span><span class="nx">тесты</span>
+<span class="err">└──</span><span class="w"> </span><span class="nx">dbt_project</span><span class="p">.</span><span class="nx">yml</span><span class="w">      </span><span class="err">#</span><span class="w"> </span><span class="nx">Главный</span><span class="w"> </span><span class="nx">конфигурационный</span><span class="w"> </span><span class="nx">файл</span>
+</code></pre></div>
+
+<h3 id="modelstaxi_rides">Директория <code>models/taxi_rides/</code></h3>
+<p>Модели группируются в поддиректории по смысловому признаку. В примере <code>taxi_rides/</code> содержит все модели, связанные с данными о поездках такси. Имя поддиректории -- произвольное, но рекомендуется отражать домен данных. Вложенность может быть любой глубины, например <code>models/staging/taxi/</code>, <code>models/marts/finance/</code>.</p>
+<h3 id="model_propertiesyml">Файл <code>model_properties.yml</code></h3>
+<p>Этот файл описывает <strong>свойства моделей</strong>: их названия, описания, доступность, колонки и тесты. Имя файла может быть любым (например, <code>schema.yml</code>, <code>_taxi_rides.yml</code>), главное -- расширение <code>.yml</code> и расположение в <code>models/</code>. Таких файлов может быть несколько -- dbt автоматически находит все <code>.yml</code>-файлы в <code>models/</code> и объединяет их.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+
+<span class="nt">models</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">taxi_rides_raw</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Yellow Taxi raw data</span>
+<span class="w">    </span><span class="nt">access</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
+<span class="w">    </span><span class="nt">columns</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">avg_fare_per_day</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Average ride per day</span>
+<span class="w">        </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not_null</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unique</span>
+</code></pre></div>
+
+<h3 id="dbt">Директория <code>~/.dbt/</code></h3>
+<p>При первом запуске <code>dbt init</code> в домашней директории пользователя создаётся скрытая директория <code>~/.dbt/</code>. Она содержит:</p>
+<table>
+<thead>
+<tr>
+<th>Файл</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>profiles.yml</code></td>
+<td>Профили подключения к базам данных (общий для всех проектов)</td>
+</tr>
+<tr>
+<td><code>packages.yml</code></td>
+<td>(необязательно) глобальная конфигурация пакетов</td>
+</tr>
+</tbody>
+</table>
+<p>Путь <code>~/.dbt/profiles.yml</code> -- это место по умолчанию, где dbt ищет настройки подключения. Его можно переопределить флагом <code>--profiles-dir</code> или переменной окружения <code>DBT_PROFILES_DIR</code>.</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>~/.dbt/
+<span class="c1"># profiles.yml</span>
+</code></pre></div>
+
+<h3 id="_6">Скомпилированные файлы и артефакты</h3>
+<p>При выполнении команд <code>dbt run</code>, <code>dbt compile</code>, <code>dbt test</code> и других dbt создаёт скомпилированные файлы в директории <code>target/</code>:</p>
+<div class="codehilite"><pre><span></span><code>target/
+├── compiled/               # SQL после раскрытия Jinja-шаблонов
+│   └── nyc_yellow_taxi/
+│       └── models/
+│           └── taxi_rides/
+│               ├── taxi_rides_raw.sql      # чистый SQL без Jinja
+│               └── avg_fare_per_day.sql
+├── run/                    # SQL, который был выполнен (включая CREATE/INSERT)
+│   └── nyc_yellow_taxi/
+│       └── models/
+│           └── taxi_rides/
+│               ├── taxi_rides_raw.sql
+│               └── avg_fare_per_day.sql
+├── manifest.json           # Полное описание проекта (модели, тесты, зависимости)
+├── run_results.json        # Результаты последнего запуска
+├── catalog.json            # Метаданные (после dbt docs generate)
+└── graph.gpickle           # Сериализованный DAG
+</code></pre></div>
+
+<ul>
+<li><strong><code>target/compiled/</code></strong> -- результат <code>dbt compile</code> или <code>dbt run</code>. Содержит SQL с раскрытыми Jinja-шаблонами (<code>ref()</code>, <code>source()</code>, переменные), но <strong>без</strong> обёрток <code>CREATE TABLE</code>/<code>CREATE VIEW</code>. Полезно для отладки -- можно увидеть, что именно dbt отправит в базу.</li>
+<li><strong><code>target/run/</code></strong> -- финальный SQL, который dbt выполнил в базе данных, включая DDL-обёртки (<code>CREATE VIEW AS ...</code>, <code>CREATE TABLE AS ...</code>).</li>
+<li><strong><code>manifest.json</code></strong> -- JSON-файл с полным описанием проекта: все модели, источники, тесты, макросы, зависимости. Используется для интеграции с другими инструментами.</li>
+<li><strong><code>run_results.json</code></strong> -- результаты последнего выполнения: статус каждой модели, время выполнения, ошибки.</li>
+</ul>
+<p>Директория <code>target/</code> добавляется в <code>.gitignore</code> -- это генерируемые артефакты, которые не должны попадать в git.</p>
+<h3 id="_7">Создание нового проекта</h3>
+<div class="codehilite"><pre><span></span><code>dbt<span class="w"> </span>init<span class="w"> </span>&lt;имя_проекта&gt;
+</code></pre></div>
+
+<p>Команда запрашивает имя проекта, тип базы данных и создаёт полную структуру директорий.</p>
+<div class="codehilite"><pre><span></span><code>repl:~/workspace$<span class="w"> </span>dbt<span class="w"> </span>init
+<span class="m">16</span>:38:37<span class="w">  </span>Running<span class="w"> </span>with<span class="w"> </span><span class="nv">dbt</span><span class="o">=</span><span class="m">1</span>.8.4
+Enter<span class="w"> </span>a<span class="w"> </span>name<span class="w"> </span><span class="k">for</span><span class="w"> </span>your<span class="w"> </span>project<span class="w"> </span><span class="o">(</span>letters,<span class="w"> </span>digits,<span class="w"> </span>underscores<span class="o">)</span>:<span class="w"> </span>test_project
+Which<span class="w"> </span>database<span class="w"> </span>would<span class="w"> </span>you<span class="w"> </span>like<span class="w"> </span>to<span class="w"> </span>use?<span class="w"> </span><span class="o">[</span><span class="m">1</span><span class="o">]</span><span class="w"> </span>duckdb
+Enter<span class="w"> </span>a<span class="w"> </span>number:<span class="w"> </span><span class="m">1</span>
+</code></pre></div>
+
+<hr />
+<h2 id="6-profilesyml">6. Профили и конфигурация (profiles.yml)</h2>
+<p><strong>Профиль</strong> -- набор настроек подключения к базе данных для определённого окружения.</p>
+<table>
+<thead>
+<tr>
+<th>Окружение</th>
+<th>Назначение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Development (dev)</strong></td>
+<td>Разработка и тестирование</td>
+</tr>
+<tr>
+<td><strong>Staging / Test</strong></td>
+<td>Интеграционное тестирование</td>
+</tr>
+<tr>
+<td><strong>Production (prod)</strong></td>
+<td>Финальные данные для потребителей</td>
+</tr>
+</tbody>
+</table>
+<h3 id="profilesyml-duckdb">Пример profiles.yml с DuckDB</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">nyc_yellow_taxi</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dev</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duckdb</span>
+<span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbt.duckdb</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+</code></pre></div>
+
+<h3 id="profilesyml-postgresql">Пример profiles.yml с PostgreSQL</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">nyc_yellow_taxi</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dev</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
+<span class="w">      </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbt_user</span>
+<span class="w">      </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">env_var(&#39;DBT_PG_PASSWORD&#39;)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">dbname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">taxi_db</span>
+<span class="w">      </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
+<span class="w">      </span><span class="nt">threads</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">    </span><span class="nt">prod</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prod-db.example.com</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
+<span class="w">      </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbt_prod</span>
+<span class="w">      </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">env_var(&#39;DBT_PG_PASSWORD&#39;)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">dbname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">analytics</span>
+<span class="w">      </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">production</span>
+<span class="w">      </span><span class="nt">threads</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev</span>
+</code></pre></div>
+
+<h3 id="duckdb-postgresql">Профиль с несколькими адаптерами (DuckDB + PostgreSQL)</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">nyc_yellow_taxi</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dev-duckdb</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">duckdb</span>
+<span class="w">      </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbt.duckdb</span>
+<span class="w">    </span><span class="nt">dev-postgres</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="w">      </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">localhost</span>
+<span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5432</span>
+<span class="w">      </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbt_user</span>
+<span class="w">      </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">env_var(&#39;DBT_PG_PASSWORD&#39;)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+<span class="w">      </span><span class="nt">dbname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">taxi_db</span>
+<span class="w">      </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
+<span class="w">      </span><span class="nt">threads</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">  </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dev-duckdb</span><span class="w">   </span><span class="c1"># по умолчанию используется DuckDB</span>
+</code></pre></div>
+
+<h3 id="target-">Переключение между target-ами</h3>
+<p>Поле <code>target</code> в <code>profiles.yml</code> определяет, какое окружение используется по умолчанию. Переключиться можно несколькими способами:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Использовать target по умолчанию (из profiles.yml)</span>
+dbt<span class="w"> </span>run
+
+<span class="c1"># Явно указать target при запуске</span>
+dbt<span class="w"> </span>run<span class="w"> </span>--target<span class="w"> </span>dev-postgres
+dbt<span class="w"> </span>run<span class="w"> </span>--target<span class="w"> </span>dev-duckdb
+
+<span class="c1"># Это работает со всеми командами</span>
+dbt<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--target<span class="w"> </span>dev-postgres
+dbt<span class="w"> </span>compile<span class="w"> </span>--target<span class="w"> </span>dev-duckdb
+</code></pre></div>
+
+<p>В SQL-файлах моделей можно писать условную логику, зависящую от текущего target:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- models/taxi_rides/taxi_rides_raw.sql</span>
+<span class="err">{{</span><span class="w"> </span><span class="n">config</span><span class="p">(</span><span class="n">materialized</span><span class="o">=</span><span class="s1">&#39;table&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+
+<span class="k">SELECT</span>
+<span class="w">    </span><span class="n">pickup_datetime</span><span class="p">,</span>
+<span class="w">    </span><span class="n">dropoff_datetime</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fare_amount</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tip_amount</span>
+<span class="k">FROM</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="k">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;duckdb&#39;</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;data/yellow_taxi.parquet&#39;</span><span class="p">)</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">elif</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="k">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;postgres&#39;</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="k">source</span><span class="p">(</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;yellow_taxi&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endif</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+</code></pre></div>
+
+<p>Переменная <code>target</code> доступна в Jinja и содержит информацию о текущем подключении:</p>
+<table>
+<thead>
+<tr>
+<th>Свойство</th>
+<th>Описание</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>target.type</code></td>
+<td>Тип адаптера</td>
+<td><code>'duckdb'</code>, <code>'postgres'</code></td>
+</tr>
+<tr>
+<td><code>target.name</code></td>
+<td>Имя target-а</td>
+<td><code>'dev-duckdb'</code>, <code>'dev-postgres'</code></td>
+</tr>
+<tr>
+<td><code>target.schema</code></td>
+<td>Схема по умолчанию</td>
+<td><code>'public'</code></td>
+</tr>
+<tr>
+<td><code>target.database</code></td>
+<td>Имя базы данных</td>
+<td><code>'taxi_db'</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Имя профиля должно совпадать с <code>profile</code> в <code>dbt_project.yml</code></li>
+<li><code>target: dev</code> -- активное окружение по умолчанию</li>
+<li>Файл хранится в <code>~/.dbt/profiles.yml</code></li>
+<li>Проект может иметь несколько окружений в одном профиле</li>
+</ul>
+<hr />
+<h2 id="7-duckdb">7. DuckDB как база данных для обучения</h2>
+<p><strong>DuckDB</strong> -- open-source аналитическая СУБД без сервера (как SQLite, но для аналитики).</p>
+<table>
+<thead>
+<tr>
+<th>Свойство</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Serverless</strong></td>
+<td>Не требует серверного процесса</td>
+</tr>
+<tr>
+<td><strong>Аналитическая</strong></td>
+<td>Оптимизирована для OLAP-запросов</td>
+</tr>
+<tr>
+<td><strong>Векторизованная</strong></td>
+<td>Работает <em>быстро</em></td>
+</tr>
+<tr>
+<td><strong>Простая</strong></td>
+<td>Минимальная настройка, файл базы хранится локально</td>
+</tr>
+</tbody>
+</table>
+<p>Идеальна для обучения: не требует установки сервера, легко работает с dbt, читает Parquet и CSV напрямую.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- DuckDB умеет читать файлы напрямую</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="s1">&#39;data.parquet&#39;</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="s1">&#39;data.csv&#39;</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;api.json&#39;</span><span class="p">);</span>
+</code></pre></div>
+
+<hr />
+<h2 id="8-dbt">8. Рабочий процесс в dbt</h2>
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">Создать</span><span class="w"> </span><span class="n">проект</span><span class="w">          </span><span class="p">(</span><span class="n">dbt</span><span class="w"> </span><span class="n">init</span><span class="p">)</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">Настроить</span><span class="w"> </span><span class="n">конфигурацию</span><span class="w">  </span><span class="p">(</span><span class="n">profiles</span><span class="mf">.</span><span class="n">yml</span><span class="p">)</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">Создать</span><span class="w"> </span><span class="n">модели</span><span class="w"> </span><span class="n">и</span><span class="w"> </span><span class="n">шаблоны</span>
+<span class="mf">4.</span><span class="w"> </span><span class="n">Материализовать</span><span class="w"> </span><span class="n">модели</span><span class="w">  </span><span class="p">(</span><span class="n">dbt</span><span class="w"> </span><span class="kr">run</span><span class="p">)</span>
+<span class="mf">5.</span><span class="w"> </span><span class="n">Проверить</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">протестировать</span><span class="w"> </span><span class="p">(</span><span class="n">dbt</span><span class="w"> </span><span class="n">test</span><span class="p">)</span>
+<span class="mf">6.</span><span class="w"> </span><span class="n">Повторить</span><span class="w"> </span><span class="n">по</span><span class="w"> </span><span class="n">мере</span><span class="w"> </span><span class="n">необходимости</span>
+</code></pre></div>
+
+<p>Большую часть времени вы будете проводить на <strong>шагах 3-6</strong> -- итеративная разработка моделей.</p>
+<hr />
+<h2 id="9-dbt-run">9. Команда dbt run</h2>
+<p>Основная команда для <strong>материализации моделей</strong>:</p>
+<ol>
+<li>Берёт SQL-код моделей</li>
+<li>Обрабатывает Jinja-шаблоны</li>
+<li>Выполняет SQL в целевом хранилище</li>
+<li>Создаёт таблицы или представления</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>repl:~$<span class="w"> </span>dbt<span class="w"> </span>run
+
+<span class="m">04</span>:52:11<span class="w">  </span>Running<span class="w"> </span>with<span class="w"> </span><span class="nv">dbt</span><span class="o">=</span><span class="m">1</span>.8.4
+<span class="m">04</span>:52:13<span class="w">  </span><span class="m">1</span><span class="w"> </span>of<span class="w"> </span><span class="m">1</span><span class="w"> </span>START<span class="w"> </span>sql<span class="w"> </span>view<span class="w"> </span>model<span class="w"> </span>main.sales_data<span class="w"> </span>......<span class="w"> </span><span class="o">[</span>RUN<span class="o">]</span>
+<span class="m">04</span>:52:13<span class="w">  </span><span class="m">1</span><span class="w"> </span>of<span class="w"> </span><span class="m">1</span><span class="w"> </span>OK<span class="w"> </span>created<span class="w"> </span>sql<span class="w"> </span>view<span class="w"> </span>model<span class="w"> </span>main.sales_data<span class="w"> </span>.<span class="w"> </span><span class="o">[</span>OK<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">0</span>.12s<span class="o">]</span>
+<span class="m">04</span>:52:13<span class="w">  </span>Completed<span class="w"> </span>successfully
+</code></pre></div>
+
+<p><strong>Полная пересборка</strong> (когда обычный run не помогает):</p>
+<div class="codehilite"><pre><span></span><code>dbt<span class="w"> </span>run<span class="w"> </span>-f<span class="w">    </span><span class="c1"># или dbt run --full-refresh</span>
+</code></pre></div>
+
+<hr />
+<h2 id="10">10. Стратегии материализации</h2>
+<p>По умолчанию dbt создаёт <strong>представления (views)</strong>, а не таблицы. Чтобы создать таблицу, нужно явно указать материализацию.</p>
+<table>
+<thead>
+<tr>
+<th>Стратегия</th>
+<th>Описание</th>
+<th>Когда использовать</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>view</strong></td>
+<td>Представление (по умолчанию)</td>
+<td>Лёгкие трансформации, небольшие данные</td>
+</tr>
+<tr>
+<td><strong>table</strong></td>
+<td>Физическая таблица</td>
+<td>Тяжёлые трансформации, частые запросы</td>
+</tr>
+<tr>
+<td><strong>incremental</strong></td>
+<td>Дозагрузка новых записей</td>
+<td>Большие объёмы, полная пересборка слишком дорога</td>
+</tr>
+<tr>
+<td><strong>ephemeral</strong></td>
+<td>Встраивается как CTE, не создаёт объект в БД</td>
+<td>Промежуточные трансформации</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">Как задать</h3>
+<p>В модели:</p>
+<div class="codehilite"><pre><span></span><code><span class="err">{{</span><span class="w"> </span><span class="n">config</span><span class="p">(</span><span class="n">materialized</span><span class="o">=</span><span class="s1">&#39;table&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_spent</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;orders&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span>
+</code></pre></div>
+
+<p>Глобально в <code>dbt_project.yml</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">models</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">my_project</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">materialized</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">view</span>
+<span class="w">    </span><span class="nt">marts</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">materialized</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">table</span>
+</code></pre></div>
+
+<h3 id="incremental">Incremental модели</h3>
+<div class="codehilite"><pre><span></span><code><span class="err">{{</span><span class="w"> </span><span class="n">config</span><span class="p">(</span><span class="n">materialized</span><span class="o">=</span><span class="s1">&#39;incremental&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">order_id</span><span class="p">,</span><span class="w"> </span><span class="n">order_date</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;raw_orders&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_incremental</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">order_date</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">order_date</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="err">}}</span><span class="p">)</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endif</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+</code></pre></div>
+
+<p>При первом запуске загружаются все данные; при последующих -- только новые.</p>
+<hr />
+<h2 id="11-dbt">11. Модели данных и модели в dbt</h2>
+<h3 id="_9">Концепция модели данных</h3>
+<p>Модель данных -- <strong>логическое представление</strong> данных: что они означают, как связаны, какие у них атрибуты.</p>
+<p>Пример:</p>
+<table>
+<thead>
+<tr>
+<th>Species</th>
+<th># of legs</th>
+<th>Venomous</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cheetah</td>
+<td>4</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Duck</td>
+<td>2</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Platypus</td>
+<td>4</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Rattlesnake</td>
+<td>0</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>В e-commerce контексте модель данных связывает продажи, товары и оплаты; определяет отношения Клиенты → Адреса → Заказы.</p>
+<h3 id="dbt_1">Модель в dbt</h3>
+<p>В dbt <strong>модель</strong> -- это конкретно:</p>
+<ul>
+<li><strong>SQL-файл</strong> (обычно <code>SELECT</code>-запрос) с расширением <code>.sql</code></li>
+<li>Располагается в директории <code>models/</code></li>
+<li>При <code>dbt run</code> материализуется в таблицу или представление</li>
+<li>Имя файла = имя модели = имя объекта в базе данных</li>
+<li>Начиная с dbt 1.3+ поддерживаются и <strong>Python-модели</strong> (<code>.py</code> файлы)</li>
+<li>Каждая модель -- отдельный <code>.sql</code> или <code>.py</code> файл</li>
+</ul>
+<hr />
+<h2 id="12">12. Создание простой модели</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Создать директорию</span>
+mkdir<span class="w"> </span>models/order
+
+<span class="c1"># 2. Создать файл</span>
+touch<span class="w"> </span>models/order/customer_orders.sql
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="c1">-- models/order/customer_orders.sql</span>
+<span class="k">SELECT</span>
+<span class="w">    </span><span class="n">first_name</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_name</span><span class="p">,</span>
+<span class="w">    </span><span class="n">shipping_address</span><span class="p">,</span>
+<span class="w">    </span><span class="n">item_quantity</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">source_table</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># 3. Материализовать</span>
+dbt<span class="w"> </span>run
+</code></pre></div>
+
+<p>После выполнения в базе появится объект <code>customer_orders</code>.</p>
+<h3 id="_10">Соглашения по именованию</h3>
+<table>
+<thead>
+<tr>
+<th>Элемент</th>
+<th>Правило</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Имя модели</td>
+<td><code>&lt;тип&gt;_&lt;источник&gt;__&lt;контекст&gt;</code></td>
+<td><code>stg_stripe__payments</code></td>
+</tr>
+<tr>
+<td>Первичный ключ</td>
+<td><code>&lt;объект&gt;_id</code></td>
+<td><code>order_id</code></td>
+</tr>
+<tr>
+<td>Timestamp</td>
+<td><code>&lt;событие&gt;_at</code> (UTC)</td>
+<td><code>created_at</code></td>
+</tr>
+<tr>
+<td>Дата</td>
+<td><code>&lt;событие&gt;_date</code></td>
+<td><code>order_date</code></td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td>Префикс <code>is_</code> / <code>has_</code></td>
+<td><code>is_active</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-parquet">13. Чтение данных из Parquet</h2>
+<p><strong>Apache Parquet</strong> -- <strong>колоночный бинарный формат</strong> хранения данных. Данные хранятся по колонкам, что позволяет читать только нужные колонки, эффективнее сжимать и быстрее агрегировать.</p>
+<div class="codehilite"><pre><span></span><code>Строковое (CSV):                Колоночное (Parquet):
+Row1: id=1, name=A, val=10     id:   [1, 2, 3]
+Row2: id=2, name=B, val=20     name: [A, B, C]
+Row3: id=3, name=C, val=30     val:  [10, 20, 30]
+</code></pre></div>
+
+<blockquote>
+<p>Parquet vs CSV: в 2-10x компактнее и значительно быстрее благодаря колоночному хранению и сжатию</p>
+</blockquote>
+<p>DuckDB читает Parquet напрямую:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">read_parquet</span><span class="p">(</span><span class="s1">&#39;filename.parquet&#39;</span><span class="p">);</span>
+<span class="c1">-- или просто:</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="s1">&#39;filename.parquet&#39;</span><span class="p">;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="14-dbt">14. Обновление моделей dbt</h2>
+<p>Причины обновления: итеративная разработка, исправление ошибок, миграция, изменение требований.</p>
+<blockquote>
+<p>Git не обязателен для dbt, но настоятельно рекомендуется.</p>
+</blockquote>
+<h3 id="_11">Рабочий процесс</h3>
+<table>
+<thead>
+<tr>
+<th>Шаг</th>
+<th>Действие</th>
+<th>Команда</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Клонировать проект</td>
+<td><code>git clone</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Обновить модель</td>
+<td>--</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Перегенерировать</td>
+<td><code>dbt run</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Закоммитить</td>
+<td><code>git commit</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Флаг <code>--full-refresh</code> (<code>-f</code>)</strong> -- пересоздаёт модель с нуля (дропает и строит заново). Нужен при изменении <strong>схемы</strong> или <strong>логики</strong>, затрагивающей исторические данные.</p>
+<hr />
+<h2 id="15-yaml">15. Конфигурационные файлы YAML</h2>
+<h3 id="dbt_projectyml">dbt_project.yml</h3>
+<p>Главный файл проекта. <strong>Один на проект.</strong> Содержит имя, версию, пути к директориям, глобальные настройки материализации.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;nyc_yellow_taxi&#39;</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.0.0&#39;</span>
+<span class="nt">profile</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;nyc_yellow_taxi&#39;</span>
+<span class="nt">model-paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;models&quot;</span><span class="p p-Indicator">]</span>
+<span class="nt">test-paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;tests&quot;</span><span class="p p-Indicator">]</span>
+<span class="nt">macro-paths</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;macros&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+
+<h3 id="model_propertiesyml_1">model_properties.yml</h3>
+<p>Файл свойств моделей: описания, документация, тесты. Может иметь <strong>любое имя</strong> с расширением <code>.yml</code>, должен быть в <code>models/</code>. Может быть <strong>несколько</strong> таких файлов.</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+
+<span class="nt">models</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">taxi_rides_raw</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Yellow Taxi raw data</span>
+<span class="w">    </span><span class="nt">access</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
+<span class="w">    </span><span class="nt">columns</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">avg_fare_per_day</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Average ride per day</span>
+<span class="w">        </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not_null</span>
+</code></pre></div>
+
+<hr />
+<h2 id="16">16. Тестирование данных</h2>
+<p>dbt позволяет проверять качество данных. Тест считается <strong>проваленным</strong>, если возвращает хотя бы одну строку.</p>
+<h3 id="yaml">Встроенные тесты (задаются в YAML)</h3>
+<table>
+<thead>
+<tr>
+<th>Тест</th>
+<th>Проверяет</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unique</code></td>
+<td>Все значения уникальны</td>
+</tr>
+<tr>
+<td><code>not_null</code></td>
+<td>Нет NULL-значений</td>
+</tr>
+<tr>
+<td><code>accepted_values</code></td>
+<td>Значения из заданного списка</td>
+</tr>
+<tr>
+<td><code>relationships</code></td>
+<td>Ссылочная целостность (FK)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sql-tests">Пользовательские тесты (SQL в <code>tests/</code>)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- tests/assert_positive_amounts.sql</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">order_id</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;orders&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>dbt<span class="w"> </span><span class="nb">test</span><span class="w">                          </span><span class="c1"># Все тесты</span>
+dbt<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--select<span class="w"> </span>orders<span class="w">          </span><span class="c1"># Тесты для конкретной модели</span>
+</code></pre></div>
+
+<hr />
+<h2 id="17-dbt">17. Документация в dbt</h2>
+<h3 id="_12">Что документируется</h3>
+<p>Модели, колонки, data lineage / DAG, тесты, типы и размеры данных в хранилище.</p>
+<p>Документация добавляется в <code>model_properties.yml</code> через поля <code>description</code>.</p>
+<h3 id="_13">Генерация и доступ</h3>
+<div class="codehilite"><pre><span></span><code>dbt<span class="w"> </span>docs<span class="w"> </span>generate<span class="w">    </span><span class="c1"># Генерирует статический сайт (запускать после dbt run)</span>
+dbt<span class="w"> </span>docs<span class="w"> </span>serve<span class="w">       </span><span class="c1"># Локальный веб-сервер (только для разработки!)</span>
+</code></pre></div>
+
+<p>Для продакшна: dbt Cloud, Amazon S3, Nginx / Apache.</p>
+<p>Веб-интерфейс показывает:</p>
+<table>
+<thead>
+<tr>
+<th>Раздел</th>
+<th>Что содержит</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>View / Models</strong></td>
+<td>Список всех моделей проекта</td>
+</tr>
+<tr>
+<td><strong>Description</strong></td>
+<td>Описание из <code>model_properties.yml</code></td>
+</tr>
+<tr>
+<td><strong>Column details</strong></td>
+<td>Типы данных, описания колонок</td>
+</tr>
+<tr>
+<td><strong>Lineage graphs</strong></td>
+<td>Визуальный граф зависимостей (DAG)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Lineage-граф -- одна из самых полезных возможностей. Позволяет видеть, какие модели зависят друг от друга.</p>
+</blockquote>
+<hr />
+<h2 id="18-jinja">18. Шаблоны Jinja</h2>
+<p><strong>Jinja</strong> -- текстовый шаблонизатор из экосистемы Python. В dbt позволяет вставлять программную логику в SQL. Используется также в Django, Flask, Airflow.</p>
+<h3 id="_14">Синтаксис</h3>
+<table>
+<thead>
+<tr>
+<th>Конструкция</th>
+<th>Назначение</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{{ ... }}</code></td>
+<td>Подстановка значения</td>
+<td><code>{{ column_name }}</code></td>
+</tr>
+<tr>
+<td><code>{% ... %}</code></td>
+<td>Управляющая конструкция</td>
+<td><code>{% for col in columns %}</code></td>
+</tr>
+<tr>
+<td><code>{# ... #}</code></td>
+<td>Комментарий</td>
+<td><code>{# это комментарий #}</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="jinja-dbt">Функции Jinja в dbt</h3>
+<h4 id="refmodel_name-"><code>ref('model_name')</code> -- ссылка на другую модель</h4>
+<p>Самая важная функция в dbt. Создаёт зависимость между моделями и позволяет dbt строить DAG.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- models/taxi_rides/avg_fare_per_day.sql</span>
+<span class="k">SELECT</span>
+<span class="w">    </span><span class="n">pickup_date</span><span class="p">,</span>
+<span class="w">    </span><span class="k">AVG</span><span class="p">(</span><span class="n">fare_amount</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">avg_fare</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;taxi_rides_raw&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">pickup_date</span>
+</code></pre></div>
+
+<p>При компиляции <code>{{ ref('taxi_rides_raw') }}</code> заменяется на реальное имя таблицы в базе (например, <code>main.taxi_rides_raw</code> для DuckDB или <code>public.taxi_rides_raw</code> для PostgreSQL).</p>
+<h4 id="sourcesource_name-table_name-"><code>source('source_name', 'table_name')</code> -- ссылка на внешний источник</h4>
+<p>Используется для обращения к таблицам, которые <strong>не являются моделями dbt</strong>, а существуют во внешних системах (сырые данные, загруженные через EL-процесс).</p>
+<p>Сначала источник описывается в YAML:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># models/sources.yml</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+
+<span class="nt">sources</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw_taxi_data</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raw</span>
+<span class="w">    </span><span class="nt">tables</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yellow_taxi_trips</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raw taxi trip records</span>
+</code></pre></div>
+
+<p>Затем используется в SQL:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- models/taxi_rides/taxi_rides_raw.sql</span>
+<span class="k">SELECT</span>
+<span class="w">    </span><span class="n">pickup_datetime</span><span class="p">,</span>
+<span class="w">    </span><span class="n">dropoff_datetime</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fare_amount</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tip_amount</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">source</span><span class="p">(</span><span class="s1">&#39;raw_taxi_data&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;yellow_taxi_trips&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+</code></pre></div>
+
+<p>При компиляции <code>{{ source(...) }}</code> заменяется на <code>raw.yellow_taxi_trips</code>.</p>
+<h4 id="config-"><code>config(...)</code> -- настройки модели</h4>
+<p>Задаёт параметры модели (материализация, схема, теги и др.) прямо внутри SQL-файла.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Базовый пример</span>
+<span class="err">{{</span><span class="w"> </span><span class="n">config</span><span class="p">(</span><span class="n">materialized</span><span class="o">=</span><span class="s1">&#39;table&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+
+<span class="c1">-- Расширенный пример с несколькими параметрами</span>
+<span class="err">{{</span><span class="w"> </span><span class="n">config</span><span class="p">(</span>
+<span class="w">    </span><span class="n">materialized</span><span class="o">=</span><span class="s1">&#39;incremental&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">schema</span><span class="o">=</span><span class="s1">&#39;staging&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;daily&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;taxi&#39;</span><span class="p">],</span>
+<span class="w">    </span><span class="n">unique_key</span><span class="o">=</span><span class="s1">&#39;trip_id&#39;</span>
+<span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+
+<span class="k">SELECT</span>
+<span class="w">    </span><span class="n">trip_id</span><span class="p">,</span>
+<span class="w">    </span><span class="n">pickup_datetime</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fare_amount</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">source</span><span class="p">(</span><span class="s1">&#39;raw_taxi_data&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;yellow_taxi_trips&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">is_incremental</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">pickup_datetime</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">pickup_datetime</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="err">}}</span><span class="p">)</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endif</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+</code></pre></div>
+
+<p>Основные параметры <code>config()</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Описание</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>materialized</code></td>
+<td>Стратегия материализации</td>
+<td><code>'table'</code>, <code>'view'</code>, <code>'incremental'</code></td>
+</tr>
+<tr>
+<td><code>schema</code></td>
+<td>Целевая схема</td>
+<td><code>'staging'</code></td>
+</tr>
+<tr>
+<td><code>tags</code></td>
+<td>Теги для фильтрации</td>
+<td><code>['daily', 'taxi']</code></td>
+</tr>
+<tr>
+<td><code>unique_key</code></td>
+<td>Ключ для incremental</td>
+<td><code>'trip_id'</code></td>
+</tr>
+<tr>
+<td><code>enabled</code></td>
+<td>Включить/выключить модель</td>
+<td><code>True</code>, <code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="docdoc_name-"><code>doc('doc_name')</code> -- блоки документации</h4>
+<p>Позволяет выносить длинные описания в отдельные markdown-файлы и ссылаться на них в YAML.</p>
+<div class="codehilite"><pre><span></span><code>{# models/docs.md #}
+
+{% docs taxi_rides_raw %}
+Сырые данные о поездках Yellow Taxi в Нью-Йорке.
+
+Источник: NYC Taxi &amp; Limousine Commission.
+Данные обновляются ежемесячно.
+
+<span class="gs">**Ключевые колонки:**</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`pickup_datetime`</span> -- дата и время посадки
+<span class="k">-</span><span class="w"> </span><span class="sb">`fare_amount`</span> -- стоимость поездки (USD)
+{% enddocs %}
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="c1"># models/model_properties.yml</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+
+<span class="nt">models</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">taxi_rides_raw</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">doc(&#39;taxi_rides_raw&#39;)</span><span class="nv"> </span><span class="s">}}&quot;</span>
+</code></pre></div>
+
+<h3 id="jinja">Пример: цикл Jinja</h3>
+<p><strong>Без Jinja:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">SELECT</span>
+<span class="w">    </span><span class="k">COALESCE</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;2025-01-01&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_date</span><span class="p">,</span>
+<span class="w">    </span><span class="k">COALESCE</span><span class="p">(</span><span class="n">update_date</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;2025-01-01&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">update_date</span><span class="p">,</span>
+<span class="w">    </span><span class="k">COALESCE</span><span class="p">(</span><span class="n">end_date</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;2025-01-01&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_date</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">Events</span>
+</code></pre></div>
+
+<p><strong>С Jinja:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">SELECT</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;update_date&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;end_date&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="k">COALESCE</span><span class="p">(</span><span class="err">{{</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="err">}}</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;2025-01-01&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="err">}}{</span><span class="o">%</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">loop</span><span class="p">.</span><span class="k">last</span><span class="w"> </span><span class="o">%</span><span class="err">}</span><span class="p">,</span><span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endif</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endfor</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">Events</span>
+</code></pre></div>
+
+<p>Результат идентичен, но код компактнее. При <code>dbt run</code> Jinja компилируется в чистый SQL (результат в <code>target/compiled/</code>).</p>
+<h3 id="_15">Макросы</h3>
+<p>Макросы -- <strong>переиспользуемые блоки Jinja-кода</strong>, которые хранятся в директории <code>macros/</code>. Макрос -- это по сути функция: принимает аргументы и возвращает SQL-фрагмент. Макросы позволяют избежать дублирования кода и стандартизировать часто используемые паттерны.</p>
+<h4 id="_16">Что делают макросы</h4>
+<ul>
+<li><strong>Инкапсулируют повторяющуюся логику</strong> -- одна формула используется в десятках моделей</li>
+<li><strong>Стандартизируют трансформации</strong> -- все модели применяют одинаковый подход</li>
+<li><strong>Упрощают поддержку</strong> -- изменение логики в одном месте меняет поведение везде</li>
+<li><strong>Абстрагируют различия диалектов SQL</strong> -- один макрос генерирует разный SQL для разных баз</li>
+</ul>
+<h4 id="1">Пример 1: конвертация центов в доллары</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- macros/cents_to_dollars.sql</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">macro</span><span class="w"> </span><span class="n">cents_to_dollars</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="n">ROUND</span><span class="p">(</span><span class="err">{{</span><span class="w"> </span><span class="k">column_name</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endmacro</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+</code></pre></div>
+
+<p>Использование в моделях:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- models/orders/order_totals.sql</span>
+<span class="k">SELECT</span>
+<span class="w">    </span><span class="n">order_id</span><span class="p">,</span>
+<span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="n">cents_to_dollars</span><span class="p">(</span><span class="s1">&#39;amount_cents&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">amount_dollars</span><span class="p">,</span>
+<span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="n">cents_to_dollars</span><span class="p">(</span><span class="s1">&#39;tax_cents&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">tax_dollars</span><span class="p">,</span>
+<span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="n">cents_to_dollars</span><span class="p">(</span><span class="s1">&#39;shipping_cents&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">shipping_dollars</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;raw_orders&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+</code></pre></div>
+
+<p>При компиляции каждый вызов <code>{{ cents_to_dollars('amount_cents') }}</code> будет заменён на <code>ROUND(amount_cents / 100.0, 2)</code>.</p>
+<h4 id="2">Пример 2: безопасное деление (без деления на ноль)</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- macros/safe_divide.sql</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">macro</span><span class="w"> </span><span class="n">safe_divide</span><span class="p">(</span><span class="n">numerator</span><span class="p">,</span><span class="w"> </span><span class="n">denominator</span><span class="p">,</span><span class="w"> </span><span class="n">default_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="k">CASE</span>
+<span class="w">        </span><span class="k">WHEN</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">denominator</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">denominator</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span>
+<span class="w">        </span><span class="k">THEN</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">default_value</span><span class="w"> </span><span class="err">}}</span>
+<span class="w">        </span><span class="k">ELSE</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">numerator</span><span class="w"> </span><span class="err">}}</span><span class="p">::</span><span class="nb">FLOAT</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">denominator</span><span class="w"> </span><span class="err">}}</span>
+<span class="w">    </span><span class="k">END</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endmacro</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="c1">-- models/metrics/conversion_rates.sql</span>
+<span class="k">SELECT</span>
+<span class="w">    </span><span class="n">campaign_id</span><span class="p">,</span>
+<span class="w">    </span><span class="n">impressions</span><span class="p">,</span>
+<span class="w">    </span><span class="n">clicks</span><span class="p">,</span>
+<span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="n">safe_divide</span><span class="p">(</span><span class="s1">&#39;clicks&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;impressions&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">click_rate</span><span class="p">,</span>
+<span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="n">safe_divide</span><span class="p">(</span><span class="s1">&#39;purchases&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;clicks&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;NULL&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">purchase_rate</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;campaign_stats&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+</code></pre></div>
+
+<h4 id="3-target">Пример 3: макрос с условной логикой по target</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- macros/current_timestamp_utc.sql</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">macro</span><span class="w"> </span><span class="n">current_timestamp_utc</span><span class="p">()</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="k">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;duckdb&#39;</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">        </span><span class="k">CURRENT_TIMESTAMP</span><span class="w"> </span><span class="k">AT</span><span class="w"> </span><span class="k">TIME</span><span class="w"> </span><span class="k">ZONE</span><span class="w"> </span><span class="s1">&#39;UTC&#39;</span>
+<span class="w">    </span><span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">elif</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="k">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;postgres&#39;</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">        </span><span class="n">NOW</span><span class="p">()</span><span class="w"> </span><span class="k">AT</span><span class="w"> </span><span class="k">TIME</span><span class="w"> </span><span class="k">ZONE</span><span class="w"> </span><span class="s1">&#39;UTC&#39;</span>
+<span class="w">    </span><span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">elif</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="k">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;snowflake&#39;</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">        </span><span class="n">CONVERT_TIMEZONE</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">())</span>
+<span class="w">    </span><span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endif</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endmacro</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="c1">-- Использование в любой модели</span>
+<span class="k">SELECT</span>
+<span class="w">    </span><span class="n">order_id</span><span class="p">,</span>
+<span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="n">current_timestamp_utc</span><span class="p">()</span><span class="w"> </span><span class="err">}}</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">loaded_at</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;raw_orders&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+</code></pre></div>
+
+<h4 id="4">Пример 4: генерация стандартных метрик</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- macros/date_spine.sql</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">macro</span><span class="w"> </span><span class="n">aggregate_by_date</span><span class="p">(</span><span class="n">date_column</span><span class="p">,</span><span class="w"> </span><span class="n">metric_column</span><span class="p">,</span><span class="w"> </span><span class="n">agg_func</span><span class="o">=</span><span class="s1">&#39;SUM&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+<span class="w">    </span><span class="k">SELECT</span>
+<span class="w">        </span><span class="n">DATE_TRUNC</span><span class="p">(</span><span class="s1">&#39;day&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="n">date_column</span><span class="w"> </span><span class="err">}}</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">metric_date</span><span class="p">,</span>
+<span class="w">        </span><span class="err">{{</span><span class="w"> </span><span class="n">agg_func</span><span class="w"> </span><span class="err">}}</span><span class="p">(</span><span class="err">{{</span><span class="w"> </span><span class="n">metric_column</span><span class="w"> </span><span class="err">}}</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">metric_value</span><span class="p">,</span>
+<span class="w">        </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">record_count</span>
+<span class="w">    </span><span class="k">FROM</span>
+<span class="err">{</span><span class="o">%</span><span class="w"> </span><span class="n">endmacro</span><span class="w"> </span><span class="o">%</span><span class="err">}</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="c1">-- models/metrics/daily_revenue.sql</span>
+<span class="err">{{</span><span class="w"> </span><span class="n">aggregate_by_date</span><span class="p">(</span><span class="s1">&#39;order_date&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;amount&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<span class="w">    </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;orders&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="mi">1</span>
+</code></pre></div>
+
+<h4 id="_17">Как применять макросы</h4>
+<ol>
+<li>Создайте файл в <code>macros/</code> с определением <code>{% macro имя(аргументы) %} ... {% endmacro %}</code></li>
+<li>Вызывайте в любой модели через <code>{{ имя(аргументы) }}</code></li>
+<li>dbt автоматически находит все макросы в <code>macros/</code> -- импорт не нужен</li>
+<li>Макросы из установленных пакетов (<code>dbt_packages/</code>) также доступны автоматически</li>
+</ol>
+<hr />
+<h2 id="19-dag">19. Иерархия моделей и DAG</h2>
+<p><strong>Иерархия</strong> -- граф зависимостей между моделями, также называемый <strong>DAG</strong> (Directed Acyclic Graph) или <strong>lineage graph</strong>.</p>
+<h3 id="_18">Зачем нужна</h3>
+<p>dbt использует DAG для <strong>определения порядка выполнения</strong>. Без него модели строились бы в алфавитном порядке, что приводит к ошибкам.</p>
+<h3 id="_19">Пример</h3>
+<div class="codehilite"><pre><span></span><code>taxi_rides_raw
+    ├── avg_fare_per_day
+    └── total_creditcard_rides_per_day
+</code></pre></div>
+
+<p>dbt строит <code>taxi_rides_raw</code> первой. Без иерархии <code>avg_fare_per_day</code> (по алфавиту) попыталась бы построиться раньше -- и упала бы с ошибкой.</p>
+<h3 id="ref">Определение зависимостей через ref()</h3>
+<p><strong>Без ref (прямая ссылка):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">taxi_rides_raw</span>
+</code></pre></div>
+
+<p><strong>С ref (через Jinja):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="err">{{</span><span class="w"> </span><span class="k">ref</span><span class="p">(</span><span class="s1">&#39;taxi_rides_raw&#39;</span><span class="p">)</span><span class="w"> </span><span class="err">}}</span>
+</code></pre></div>
+
+<p>При <code>dbt run</code> Jinja подставляет реальное имя таблицы. dbt анализирует все <code>ref()</code> и строит DAG автоматически.</p>
+<p><strong>Преимущества ref():</strong>
+- Автоматический порядок сборки
+- Абстракция от имён таблиц
+- Визуализация в <code>dbt docs</code>
+- Параллельное выполнение независимых моделей</p>
+<hr />
+<h2 id="dbt_2">Шпаргалка по командам dbt</h2>
+<table>
+<thead>
+<tr>
+<th>Команда</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dbt init &lt;name&gt;</code></td>
+<td>Создать новый проект</td>
+</tr>
+<tr>
+<td><code>dbt run</code></td>
+<td>Материализовать все модели</td>
+</tr>
+<tr>
+<td><code>dbt run -f</code></td>
+<td>Полная пересборка</td>
+</tr>
+<tr>
+<td><code>dbt run --select model_name</code></td>
+<td>Запустить конкретную модель</td>
+</tr>
+<tr>
+<td><code>dbt run --select +model</code></td>
+<td>Модель + все её зависимости (upstream)</td>
+</tr>
+<tr>
+<td><code>dbt run --select model+</code></td>
+<td>Модель + все зависящие от неё (downstream)</td>
+</tr>
+<tr>
+<td><code>dbt run --target prod</code></td>
+<td>Запустить с конкретным target</td>
+</tr>
+<tr>
+<td><code>dbt test</code></td>
+<td>Запустить все тесты</td>
+</tr>
+<tr>
+<td><code>dbt build</code></td>
+<td>run + test для всех моделей</td>
+</tr>
+<tr>
+<td><code>dbt docs generate</code></td>
+<td>Сгенерировать документацию</td>
+</tr>
+<tr>
+<td><code>dbt docs serve</code></td>
+<td>Локальный сервер документации</td>
+</tr>
+<tr>
+<td><code>dbt compile</code></td>
+<td>Скомпилировать SQL без выполнения</td>
+</tr>
+<tr>
+<td><code>dbt seed</code></td>
+<td>Загрузить CSV из seeds/</td>
+</tr>
+<tr>
+<td><code>dbt deps</code></td>
+<td>Установить пакеты</td>
+</tr>
+<tr>
+<td><code>dbt debug</code></td>
+<td>Диагностика подключения</td>
+</tr>
+<tr>
+<td><code>dbt clean</code></td>
+<td>Удалить артефакты (target/)</td>
+</tr>
+<tr>
+<td><code>dbt --version</code></td>
+<td>Версия dbt</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
