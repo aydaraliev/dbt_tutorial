@@ -11,6 +11,6 @@
 <details>
 <summary>Решение</summary>
 
-`dbt init nyc_yellow_taxi` → выберите duckdb → `cd nyc_yellow_taxi` → `ls`
+<code>dbt init nyc_yellow_taxi</code> → выберите duckdb → <code>cd nyc_yellow_taxi</code> → <code>ls</code>
 
 </details>

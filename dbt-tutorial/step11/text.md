@@ -17,6 +17,6 @@
 <details>
 <summary>Решение</summary>
 
-Замените `from taxi_rides_raw` на `from {{ ref('taxi_rides_raw') }}`, затем `dbt run`.
+Замените <code>from taxi_rides_raw</code> на <code>from {{ ref('taxi_rides_raw') }}</code>, затем <code>dbt run</code>.
 
 </details>

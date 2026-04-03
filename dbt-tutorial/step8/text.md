@@ -13,6 +13,6 @@
 <details>
 <summary>Решение</summary>
 
-Замените первый `____` на `count(*)`, второй на `1` (credit card payment type). Затем `dbt run` и `./datacheck`.
+Замените первый <code>____</code> на <code>count(*)</code>, второй на <code>1</code> (credit card payment type). Затем <code>dbt run</code> и <code>./datacheck</code>.
 
 </details>

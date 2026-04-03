@@ -7,6 +7,6 @@
 <details>
 <summary>Решение</summary>
 
-`dbt --version`
+<code>dbt --version</code>
 
 </details>
