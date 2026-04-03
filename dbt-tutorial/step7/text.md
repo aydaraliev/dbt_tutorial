@@ -11,6 +11,6 @@
 <details>
 <summary>Решение</summary>
 
-Замените `_____` на `select * from read_parquet('yellow_tripdata_2023-01-partial.parquet')`, затем `dbt run` и `./datacheck` (ожидается 500000 записей).
+Замените <code>_____</code> на <code>select * from read_parquet('yellow_tripdata_2023-01-partial.parquet')</code>, затем <code>dbt run</code> и <code>./datacheck</code> (ожидается 500000 записей).
 
 </details>

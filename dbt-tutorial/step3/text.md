@@ -7,6 +7,6 @@
 <details>
 <summary>Решение</summary>
 
-`dbt -h`
+<code>dbt -h</code>
 
 </details>

@@ -9,6 +9,6 @@
 <details>
 <summary>Решение</summary>
 
-Замените `_____` в первой строке на `nyc_yellow_taxi`, в строке `type:` на `duckdb`. Затем `cd ~/nyc_yellow_taxi && dbt debug`.
+Замените <code>_____</code> в первой строке на <code>nyc_yellow_taxi</code>, в строке <code>type:</code> на <code>duckdb</code>. Затем <code>cd ~/nyc_yellow_taxi && dbt debug</code>.
 
 </details>

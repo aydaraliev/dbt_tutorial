@@ -9,6 +9,6 @@
 <details>
 <summary>Решение</summary>
 
-Замените `____` на `yellow_tripdata_2023-01-partial.parquet`, затем `cd ~/nyc_yellow_taxi && dbt run`.
+Замените <code>____</code> на <code>yellow_tripdata_2023-01-partial.parquet</code>, затем <code>cd ~/nyc_yellow_taxi && dbt run</code>.
 
 </details>
